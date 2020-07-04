@@ -35,7 +35,7 @@ def pivot(data,r,PA,pxsize,d):
 
 
 def prepare_Qphi_image(data,PA_disk):
-    infile=open("input.dat").readlines()
+    infile=open("../input.dat").readlines()
     for line in infile:
         if line.split('=')[0]=='Distance':
             d=float(line.split('=')[1])
@@ -43,7 +43,7 @@ def prepare_Qphi_image(data,PA_disk):
         
     ############################################################
     # Loading Image.out info
-    imfile=open("Image_jband.out").readlines()
+    imfile=open("../Image_jband.out").readlines()
     for line in imfile:
         if line.split('=')[0]=='MCobs:fov':
             fov=float(line.split('=')[1].split('!')[0])
@@ -72,7 +72,7 @@ def prepare_Qphi_image(data,PA_disk):
     ############################################################
     # Creating fits file
     hdu=fits.PrimaryHDU(data_rot)
-    hdu.writeto("Qphi_model_rotated.fits",overwrite=True)
+    hdu.writeto("../Qphi_model_rotated.fits",overwrite=True)
 
     return data_rot
         
@@ -82,7 +82,7 @@ def peak_flux_Qphi_model(Qphi_model_rotated):
     hdu=fits.open(Qphi_model_rotated)
     data_rot_Qphi=hdu[0].data
 
-    infile=open("input.dat").readlines()
+    infile=open("../input.dat").readlines()
     for line in infile:
         if line.split('=')[0]=='Distance':
             d=float(line.split('=')[1])
@@ -90,7 +90,7 @@ def peak_flux_Qphi_model(Qphi_model_rotated):
         
     ############################################################
     # Loading Image.out info
-    imfile=open("Image_jband.out").readlines()
+    imfile=open("../Image_jband.out").readlines()
     for line in imfile:
         if line.split('=')[0]=='MCobs:fov':
             fov=float(line.split('=')[1].split('!')[0])
@@ -124,7 +124,7 @@ def peak_flux_Qphi_model(Qphi_model_rotated):
     
 def prepare_alma_image(data,PA_disk,**kwargs):
 
-    infile=open("input.dat").readlines()
+    infile=open("../input.dat").readlines()
     for line in infile:
         if line.split('=')[0]=='Distance':
             d=float(line.split('=')[1])
@@ -132,7 +132,7 @@ def prepare_alma_image(data,PA_disk,**kwargs):
         
     ############################################################
     # Loading Image.out info
-    imfile=open("Image_alma.out").readlines()
+    imfile=open("../Image_alma.out").readlines()
     for line in imfile:
         if line.split('=')[0]=='MCobs:fov':
             fov=float(line.split('=')[1].split('!')[0])
@@ -160,7 +160,7 @@ def prepare_alma_image(data,PA_disk,**kwargs):
 
     # Creating fits file
     hdu=fits.PrimaryHDU(data_rot)
-    hdu.writeto("alma_model_rotated.fits",overwrite=True)
+    hdu.writeto("../alma_model_rotated.fits",overwrite=True)
 
 
     return data_rot
@@ -171,7 +171,7 @@ def peak_flux_alma_model(alma_model_rotated):
     hdu=fits.open(alma_model_rotated)
     data_rot_alma=hdu[0].data
 
-    infile=open("input.dat").readlines()
+    infile=open("../input.dat").readlines()
     for line in infile:
         if line.split('=')[0]=='Distance':
             d=float(line.split('=')[1])
@@ -179,7 +179,7 @@ def peak_flux_alma_model(alma_model_rotated):
         
     ############################################################
     # Loading Image.out info
-    imfile=open("Image_jband.out").readlines()
+    imfile=open("../Image_jband.out").readlines()
     for line in imfile:
         if line.split('=')[0]=='MCobs:fov':
             fov=float(line.split('=')[1].split('!')[0])

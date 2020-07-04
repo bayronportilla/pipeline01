@@ -3,7 +3,7 @@ import sys
 
 
 def ratio_SMsm():
-    data=np.loadtxt("azprofile_alma_mod.dat")
+    data=np.loadtxt("../azprofile_alma_mod.dat")
     r=np.reshape(data[:,0:1],data.shape[0])
     b=np.reshape(data[:,1:2],data.shape[0])
     
@@ -33,7 +33,7 @@ def ratio_SMsm():
     bmax1_val=max(bmax1)
     bmax2_val=max(bmax2)
 
-    f=open("ratios.dat","w")
+    f=open("../ratios.dat","w")
     f.write("ratio_1=%.5f\n"%(bmax1_val/bmin1_val))
     f.write("ratio_2=%.5f\n"%(bmax2_val/bmin2_val))
     print("ratio_1=%.5f"%(bmax1_val/bmin1_val))

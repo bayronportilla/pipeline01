@@ -20,7 +20,7 @@ cflux_jband.radial_profile(image_Qphi,120.0)
 # profiles_modeled
 profiles_modeled.output_data()
 
-sys.exit()
+
 # jband_ratios
 jband_ratios.find_ratios()
 
@@ -28,8 +28,8 @@ jband_ratios.find_ratios()
 # Prepare images
 image_alma_rotated=prepare_images.prepare_alma_image(image_alma,158.6)
 image_Qphi_rotated=prepare_images.prepare_Qphi_image(image_alma,158.6)
-print(prepare_images.peak_flux_alma_model("alma_model_rotated.fits"))
-print(prepare_images.peak_flux_Qphi_model("Qphi_model_rotated.fits"))
+print(prepare_images.peak_flux_alma_model("../alma_model_rotated.fits"))
+print(prepare_images.peak_flux_Qphi_model("../Qphi_model_rotated.fits"))
 
 
 # azprofile
