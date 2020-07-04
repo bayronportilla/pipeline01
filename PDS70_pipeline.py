@@ -33,7 +33,7 @@ print(prepare_images.peak_flux_Qphi_model("../Qphi_model_rotated.fits"))
 
 
 # azprofile
-azprofile_alma.azimuthal_profile("alma_model_rotated.fits",0.004,70.0,30.0,49.7,158.6,113.43,72)
+azprofile_alma.azimuthal_profile("../alma_model_rotated.fits",0.004,70.0,30.0,49.7,158.6,113.43,72)
 
 
 # Ratio alma
