@@ -53,9 +53,9 @@ def image(fits_image):
 
     ############################################################
     # Absolute paths to files
-    path_fits_image='output/'+fits_image
-    path_image_file='Image_jband.out'
-    path_input_file='input.dat'
+    path_fits_image='../output/'+fits_image
+    path_image_file='../Image_jband.out'
+    path_input_file='../input.dat'
 
     ############################################################
     # Fetching information
@@ -109,7 +109,7 @@ def radial_profile(data,lim):
 
     ############################################################
     # Fetching information
-    imfile=open("Image_jband.out").readlines()
+    imfile=open("../Image_jband.out").readlines()
     for line in imfile:
         if line.split('=')[0]=='MCobs:fov':
             fov=float(line.split('=')[1].split('!')[0])
@@ -122,7 +122,7 @@ def radial_profile(data,lim):
         else:
             continue
 
-    infile=open("input.dat").readlines()
+    infile=open("../input.dat").readlines()
     for line in infile:
         if line.split('=')[0]=='Distance':
             d=float(line.split('=')[1])
@@ -212,7 +212,7 @@ def radial_profile(data,lim):
     """
     ############################################################
     # Creating file
-    file=open('jband_radial_profile_modeled.dat',"w")
+    file=open('../jband_radial_profile_modeled.dat',"w")
     for i in range(0,len(r_au)):
         file.write('%.15e %.15e \n'%(r_au[i],brightness[i]))
     

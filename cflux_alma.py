@@ -13,9 +13,9 @@ def image(fits_image,beam_x,beam_y,beam_angle):
 
     ############################################################
     # Absolute paths to files
-    path_fits_image='output/'+fits_image
-    path_image_file='Image_alma.out'
-    path_input_file='input.dat'
+    path_fits_image='../output/'+fits_image
+    path_image_file='../Image_alma.out'
+    path_input_file='../input.dat'
 
 
     ############################################################
@@ -75,7 +75,7 @@ def radial_profile(data,lim):
 
     ############################################################
     # Fetching information
-    imfile=open("Image_alma.out").readlines()
+    imfile=open("../Image_alma.out").readlines()
     for line in imfile:
         if line.split('=')[0]=='MCobs:fov':
             fov=float(line.split('=')[1].split('!')[0])
@@ -88,7 +88,7 @@ def radial_profile(data,lim):
         else:
             continue
 
-    infile=open("input.dat").readlines()
+    infile=open("../input.dat").readlines()
     for line in infile:
         if line.split('=')[0]=='Distance':
             d=float(line.split('=')[1])
@@ -184,7 +184,7 @@ def radial_profile(data,lim):
     
     ############################################################
     # Creating file
-    file=open('alma_radial_profile_modeled.dat',"w")
+    file=open('../alma_radial_profile_modeled.dat',"w")
     for i in range(0,len(r_au)):
         file.write('%.15e %.15e \n'%(r_au[i],brightness[i]))
 

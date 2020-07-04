@@ -18,17 +18,17 @@ def output_data():
     
     ############################################################
     # Converting MCMax3D spectra 
-    convert_flux('output/MCSpec0001.dat','spectrum_PDS70_system.dat')
-    convert_flux('output/star0001.dat','spectrum_PDS70_star.dat')
+    convert_flux('../output/MCSpec0001.dat','../spectrum_PDS70_system.dat')
+    convert_flux('../output/star0001.dat','../spectrum_PDS70_star.dat')
 
     ############################################################
     # Loading surface density profile
-    surface_density=np.loadtxt('surface_density_PDS70.dat')
+    surface_density=np.loadtxt('../surface_density_PDS70.dat')
 
     ############################################################
     # Loading data (converted) from MCMax3D 
-    system_spectrum=np.loadtxt('spectrum_PDS70_system.dat')
-    stellar_spectrum=np.loadtxt('spectrum_PDS70_star.dat')
+    system_spectrum=np.loadtxt('../spectrum_PDS70_system.dat')
+    stellar_spectrum=np.loadtxt('../spectrum_PDS70_star.dat')
 
     ############################################################
     # Loading photometric data
@@ -77,11 +77,11 @@ def output_data():
 
     ############################################################
     # Loading profiles modeled
-    mprofile_alma=np.loadtxt("alma_radial_profile_modeled.dat")
+    mprofile_alma=np.loadtxt("../alma_radial_profile_modeled.dat")
     r_alma=np.reshape(mprofile_alma[:,0:1],mprofile_alma.shape[0])
     b_alma=np.reshape(mprofile_alma[:,1:2],mprofile_alma.shape[0])
     
-    mprofile_jband=np.loadtxt("jband_radial_profile_modeled.dat")
+    mprofile_jband=np.loadtxt("../jband_radial_profile_modeled.dat")
     r_jband=np.reshape(mprofile_jband[:,0:1],mprofile_jband.shape[0])
     b_jband=np.reshape(mprofile_jband[:,1:2],mprofile_jband.shape[0])
 
@@ -96,9 +96,9 @@ def output_data():
     ax5=plt.subplot(gs[1,1:2])
     ax6=plt.subplot(gs[1,2:3])
     # Plot images
-    path_fits_file='/output/RToutObs0001_000001.25.fits.gz'
-    path_image_file='Image_jband.out'
-    path_input_file='input.dat'
+    path_fits_file='../output/RToutObs0001_000001.25.fits.gz'
+    path_image_file='../Image_jband.out'
+    path_input_file='../input.dat'
     # Loading Image.out info
     imfile=open(path_image_file).readlines()
     for line in imfile:
@@ -202,7 +202,7 @@ def output_data():
     ax6.set_ylabel(r'$\Sigma_{\mathrm{dust}}$ (g/cm^2)')
     #plt.show()
     
-    fig.savefig("fig_all.png")
+    fig.savefig("../fig_all.png")
 
     return None
 

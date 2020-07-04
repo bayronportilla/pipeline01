@@ -5,6 +5,7 @@ import jband_ratios
 import prepare_images
 import azprofile_alma
 import ratio_alma
+import sys
 
 # cflux_alma
 image_alma=cflux_alma.image("RTout0001_000854.89.fits.gz",0.074,0.057,63.0)
@@ -19,7 +20,7 @@ cflux_jband.radial_profile(image_Qphi,120.0)
 # profiles_modeled
 profiles_modeled.output_data()
 
-
+sys.exit()
 # jband_ratios
 jband_ratios.find_ratios()
 
