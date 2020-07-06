@@ -138,10 +138,10 @@ def output_data():
             Rout03=float(line.split('=')[1])
         else:
             continue
-    
+    """
     a1=Rout01
     a2=Rout02
-    
+    """
 
     e=np.sin((theta*units.deg).to(units.rad).value)
     d=(d*units.pc).value
@@ -156,8 +156,8 @@ def output_data():
     ax3.plot(r_alma,b_alma,'.',markersize=msize,label="model")
     ax4.plot(r_obs_j_1,b_obs_j_1,"+",label="observation 0.0FWHM")
     ax4.plot(r_jband,b_jband,".",linewidth=lwidth,label="model")
-    ax4.axvline(x=Rout01,linestyle='--',linewidth=0.5)
-    ax4.axvline(x=Rout02,linestyle='--',linewidth=0.5)
+    #ax4.axvline(x=Rout01,linestyle='--',linewidth=0.5)
+    #ax4.axvline(x=Rout02,linestyle='--',linewidth=0.5)
 #    ax4.axvline(x=Rout03,linestyle='--',linewidth=0.5)
     ax5.plot(x_system,x_system*y_system,label='MCMax3D output',linewidth=3.0)
     ax5.plot(x_star,x_star*y_star,color='orange')
