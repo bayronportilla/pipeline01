@@ -196,7 +196,7 @@ def radial_profile(data,lim):
         if rcmin<=r_au[i]<=rcmax:
             bmaxc.append(brightness[i])
     bmaxc=np.array(bmaxc)
-    fac=1#/max(bmaxc)
+    fac=1/max(bmaxc)
     brightness=brightness*fac
     
     """
