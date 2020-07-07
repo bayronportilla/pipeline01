@@ -8,7 +8,7 @@ def modify_density():
     ############################################################
     # Import data
     data_obs=np.loadtxt("alma_radial_profile_observed.dat")
-    data_mod=np.loadtxt("alma_radial_profile_modeled.dat")
+    data_mod=np.loadtxt("../alma_radial_profile_modeled.dat")
 
 
     ############################################################
@@ -53,7 +53,7 @@ def modify_density():
 
     ############################################################
     # Import initial density file
-    data_ini=np.loadtxt("surface_density_PDS70.dat")
+    data_ini=np.loadtxt("../surface_density_PDS70.dat")
     r_ini=np.reshape(data_ini[:,0:1],data_ini.shape[0])
     d_ini=np.reshape(data_ini[:,1:2],data_ini.shape[0])
 
@@ -79,7 +79,7 @@ def modify_density():
     plt.show()
     """
 
-    file=open("surface_density_PDS70.dat",'w')
+    file=open("../surface_density_PDS70.dat",'w')
     for i in range(0,len(r_ini)):
         file.write("%.15e %.15e\n"%(r_ini[i],d_new[i]))
     file.close()
