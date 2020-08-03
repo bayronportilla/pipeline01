@@ -29,25 +29,16 @@ def topx(l,pxsize,d):
     return x
 
 
-def get_profile(file,pxsize,PA_aperture,PA_disk,inc,d,size,**kwargs):
+def get_profile(file,pxsize,PA_aperture,PA_disk,inc,d,size,Nbins,**kwargs):
 
     ############################################################
     # 
-    # Get flux along the semi-major axis with a rectangular
-    # aperture.
-    #
     # file: the fits file of the observation
     # pxsize: pixel scale (arcsec/px)
     # PA_aperture: position angle of the aperture measured east-north (deg)
     # inc: disk's inclination (deg)
     # d: distance to the source (pc)
     # size: semi-major axis of the disk (AU)
-    # 
-    # returns a file with the brightness profile along the 
-    # semi-major axis and a file with the position and flux 
-    # value of the pixel located along the semi-major axis
-    # in the "South-East" quadrant containing the maximum flux
-    # value. The brightness profile returned is not normalized.
     # 
     ############################################################
 
@@ -56,15 +47,15 @@ def get_profile(file,pxsize,PA_aperture,PA_disk,inc,d,size,**kwargs):
     # Load data
     hdulist=fits.open(file)
     data_obs=hdulist[0].data[0][0]
-
+    xc=hdulist[0].header['CRPIX1']
+    yc=hdulist[0].header['CRPIX2']
+    
 
     if kwargs['average']==False:
         ############################################################
         # Derived properties
         angle_annulus=((PA_aperture-90.0)*units.deg).to(units.rad).value 
         e=np.sin((inc*units.deg).to(units.rad).value) 
-        xc=0.5*data_obs.shape[0] # Image center in data coordinates
-        yc=0.5*data_obs.shape[1] # Image center in data coordinates
         w=1.0
         h=1.0
         lim=120.0
@@ -104,7 +95,7 @@ def get_profile(file,pxsize,PA_aperture,PA_disk,inc,d,size,**kwargs):
         brightness=[phot_table['aperture_sum'][i] for i in range(0,len(phot_table))]
         for i in range(0,len(brightness)):
             brightness[i]=brightness[i]/apertures[i].area
-    
+        """
         # Do a check?
         fig=plt.figure()
         ax=plt.axes()
@@ -113,7 +104,7 @@ def get_profile(file,pxsize,PA_aperture,PA_disk,inc,d,size,**kwargs):
         ax.set_ylabel("Density flux (a.u.)")
         plt.show()
         #sys.exit()
-    
+        """
         return r_au,brightness
 
     if kwargs['average']==True:
@@ -122,56 +113,133 @@ def get_profile(file,pxsize,PA_aperture,PA_disk,inc,d,size,**kwargs):
         # Derived properties
         angle_annulus=((PA_aperture-90.0)*units.deg).to(units.rad).value 
         e=np.sin((inc*units.deg).to(units.rad).value) 
-        xc=0.5*data_obs.shape[0] # Image center in data coordinates
-        yc=0.5*data_obs.shape[1] # Image center in data coordinates
+        d_au=(d*units.pc).to(units.au).value # Distance (au)
         w=1.0
         h=1.0
-        lim=size
-        lim=topx(lim,pxsize,d)
         xc_array=[]
         yc_array=[]
 
 
         ############################################################
         # Creating elliptical aperture
-        a_disk=size
-        b_disk=a_disk*(1-e**2)**0.5
-        a_disk=topx(size,pxsize,d) 
-        b_disk=topx(b_disk,pxsize,d)
 
-        angle=((PA_disk+90)*units.deg).to(units.rad).value
+        linear_lim=2*(size) # AU
+        angular_lim=linear_lim/d_au # rad
+        angular_lim=(angular_lim*units.rad).to(units.arcsec).value # arcsec
+        pixel_lim=int(round(angular_lim/pxsize))
+        dr=topx(30.0,pxsize,d) 
+        a_in_array=[]
 
-        aperture=EllipticalAperture((xc,yc),a_disk,b_disk,theta=angle)
-        
+        for i in np.arange(yc+dr,yc+0.5*pixel_lim,dr):
+            a_in_array.append(i-xc)
+        a_out_array=[i+dr for i in a_in_array]
+        b_out_array=[i*(1-e**2)**0.5 for i in a_out_array]
+
+        apertures=[EllipticalAnnulus((yc,xc),a_in=ain,a_out=aout,b_out=bout,theta=angle_annulus)
+                   for (ain,aout,bout) in zip(a_in_array,a_out_array,b_out_array)]
         
         # Do a check?
         plt.imshow(data_obs)
-        aperture.plot(color='red',lw=1)
+        apertures[-1].plot(color='red',lw=1)
         plt.show()
-        sys.exit()
         
-    
         ############################################################
-        # Creating aperture mask
-        mask=aperture.to_mask(method="center")
-        """
-        # Do a check?
-        plt.imshow(mask)
-        plt.colorbar()
-        plt.show()
-        """
-    
+        # Define class "Bin"
+        class Bin:
+            def __init__(self,ID,theta_min,theta_max,plist):
+                self.ID=ID
+                self.theta_min=theta_min
+                self.theta_max=theta_max
+                self.plist=plist
+        
+            def getFlux(self):
+                flux=0.0
+                for pixel in self.plist:
+                    flux+=aperture_data[pixel[0],pixel[1]]
+                return flux
+
+            def getTheta(self):
+                value=(self.theta_max-self.theta_min)*0.5+self.theta_min
+                return value
+
         ############################################################
-        # Extracting pixels located inside the aperture
-        aperture_data=mask.multiply(data)
-        """
-        # Do a check?
-        plt.imshow(aperture_data)
-        plt.colorbar()
-        plt.show()
-        """
+        # Creating array of bins
+        bin_list=[]
+        thetas=np.linspace(0,2*np.pi,Nbins+1)
+        for i in range(0,Nbins):
+            sbin=Bin(i+1,thetas[i],thetas[i+1],[])
+            bin_list.append(sbin)
+
+    
+        M=np.zeros((Nbins,len(apertures)))
+
+        
+        for ii in range(0,len(apertures)):
+
+            ############################################################
+            # Creating aperture mask
+            mask=apertures[ii].to_mask(method="center")
+            """
+            # Do a check?
+            plt.imshow(mask)
+            plt.colorbar()
+            plt.show()
+            """
+
+            ############################################################
+            # Extracting pixels located inside the aperture
+            aperture_data=mask.multiply(data_obs)
+        
+            # Do a check?
+            plt.imshow(aperture_data)
+            plt.colorbar()
+            plt.show()
+           
+            ############################################################
+            # Creating array of pixel's index within the aperture 
+            # relative to the star
+            pixel_list=[]
+            ycc=int(aperture_data.shape[0]*0.5)
+            xcc=int(aperture_data.shape[1]*0.5)
+            for i in range(0,aperture_data.shape[1]): # Over columns 
+                for j in range(0,aperture_data.shape[0]): # Over rows
+                    if aperture_data[j,i]!=0.0:
+                        pixel_list.append((j-ycc,i-xcc))
+
+
+            ############################################################
+            # Filling in bin_list
+            for point in pixel_list:
+                phi=np.arctan2(point[0],point[1])
+                if phi<0.0:
+                    phi=2*np.pi+phi
+                for sbin in bin_list:
+                    if sbin.theta_min<=phi<sbin.theta_max:
+                        pixel=(int(point[0]+ycc),int(point[1]+xcc))
+                        sbin.plist.append(pixel)
+
+
+            ############################################################
+            # Writing azimuthal profile 
+            x=[]
+            y=[]
+            j=0
+            for value in bin_list:
+                M[j][ii]=value.getFlux()
+                j+=1
+                #                print(value.plist)
+                #                print("asd",value.getTheta())
+                """
+                PA_bin=(value.getTheta()*units.rad).to(units.deg).value-90.0
+                if PA_bin<0.0:
+                    PA_bin=360.0+PA_bin
+                x.append(PA_bin)
+                y.append(value.getFlux()/len(value.plist))
+                """
+            print(M)
 
 
 
-get_profile("../PDS70/observations/PDS70_cont-final.fits",0.020,170.0,158.6,49.7,113.43,120.0,average=True)
+get_profile("../PDS70/observations/PDS70_cont-final.fits",
+            0.020,158.6,158.6,49.7,113.43,120.0,45,average=True)
 
