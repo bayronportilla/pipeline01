@@ -219,7 +219,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     for i in range(0,int(Nbins*0.5)):
         ax=plt.subplot(gs[i,0])
         ax.plot(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),'.',color="red")
-        ax.plot(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),'*',color="red")
+        ax.plot(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),'.',color="red")
         ax.axvline(+74,0,1)
         ax.axvline(-74,0,1)
         ax.tick_params(labelleft=False,left=False)
