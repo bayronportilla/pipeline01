@@ -90,9 +90,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     # Derived properties
     angle_annulus=((PA_disk-90.0)*units.deg).to(units.rad).value 
     e=np.sin((inc*units.deg).to(units.rad).value) 
-    d_au=(d*units.pc).to(units.au).value # Distance (au)
-    w=1.0
-    h=1.0
+    d_au=(d*units.pc).to(units.au).value 
     xc_array=[]
     yc_array=[]
 
@@ -124,12 +122,18 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     ############################################################
     # Define class "Bin"
     class Bin:
-        def __init__(self,ID,theta_min,theta_max,plist):
-            self.ID=ID
+        def __init__(self,aperture,theta_min,theta_max,plist):
+            self.aperture=aperture
             self.theta_min=theta_min
             self.theta_max=theta_max
             self.plist=plist
-        
+
+        def showFlux(self):
+            i=0
+            for pixel in self.plist:
+                print(i,aperture_data[pixel[0],pixel[1]])
+                i+=1
+
         def getFlux(self):
             flux=0.0
             for pixel in self.plist:
@@ -140,8 +144,31 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
             value=(self.theta_max-self.theta_min)*0.5+self.theta_min
             return value
 
+        def getError_beam(self,aperture):
+            beam_x=0.074 # arcsec
+            beam_y=0.057 # arcsec
+            flux_array=[]
+            for pixel in self.plist:
+                flux_array.append(aperture_data[pixel[0],pixel[1]])
+            sigma=np.std(flux_array)
+            beam_area=np.pi*(beam_x)*(beam_y)/(4*np.log(2)) 
+            Nbeam=((aperture.area*pxsize**2)/Nbins)/beam_area
+            return sigma/(Nbeam)**0.5+(0.026)/1000.
+
+        def getError_pixel(self):
+            flux_array=[]
+            for pixel in self.plist:
+                flux_array.append(aperture_data[pixel[0],pixel[1]])
+            sigma=np.std(flux_array)
+            Npixel=len(self.plist)
+            return sigma/(Npixel)**0.5
+            
+
     thetas=np.linspace(0,2*np.pi,Nbins+1)
     M=np.zeros((Nbins,len(apertures)))
+    E_beam=np.zeros((Nbins,len(apertures)))
+    E_pixel=np.zeros((Nbins,len(apertures)))
+    
 
     a_in_array=[i*pxsize*d for i in a_in_array]
     a_out_array=[i*pxsize*d for i in a_out_array]
@@ -210,23 +237,31 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
 
         ############################################################
         # Writing result
-        j=0
+        j=0 # Count over position angles
         for value in bin_list:
+            value.showFlux()
             M[j][ii]=value.getFlux()
+            E_beam[j][ii]=value.getError_beam(apertures[ii])
+            E_pixel[j][ii]=value.getError_pixel()
             j+=1
+            print()
+
             
     for i in range(0,M.shape[0]):
         M[i]=M[i]/max(M[i])
-
-
+        E_beam[i]=E_beam[i]/max(M[i])
+        E_pixel[i]=E_pixel[i]/max(M[i])
+        
+        
     ############################################################
     # Plotting
     fig=plt.figure(figsize=(5,12))
     gs=gridspec.GridSpec(int(Nbins*0.5),1,hspace=0)
     for i in range(0,int(Nbins*0.5)):
         ax=plt.subplot(gs[i,0])
-        ax.plot(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),'.',color="red")
-        ax.plot(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),'.',color="red")
+ #       ax.plot(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),'.',color="red")
+ #       ax.plot(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),'.',color="red")
+        ax.errorbar(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),yerr=np.reshape(E_beam[i:i+1,:],E_beam.shape[1]),marker=".",fmt="o")
         ax.axvline(+74,0,1)
         ax.axvline(-74,0,1)
         ax.tick_params(labelleft=False,left=False)
