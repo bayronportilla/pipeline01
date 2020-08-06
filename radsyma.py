@@ -73,10 +73,17 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
 
     ############################################################
     # Load ALMA data
-    hdulist=fits.open(file)
-    data_obs=hdulist[0].data[0][0]
-    xc=hdulist[0].header['CRPIX1']
-    yc=hdulist[0].header['CRPIX2']
+    if kwargs['type']=='obs':
+        hdulist=fits.open(file)
+        data_obs=hdulist[0].data[0][0]
+        xc=hdulist[0].header['CRPIX1']
+        yc=hdulist[0].header['CRPIX2']
+
+    elif kwargs['type']=='mod':
+        hdulist=fits.open(file)
+        data_obs=hdulist[0].data
+        xc=data_obs.shape[0]*0.5
+        yc=data_obs.shape[1]*0.5
     
 
     ############################################################
@@ -229,5 +236,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
 
 
 get_profile("../PDS70/observations/PDS70_cont-final.fits",
-            0.020,158.6,49.7,113.43,120.0,18,4,average=True)
+            0.020,158.6,49.7,113.43,120.0,18,4,type='obs')
 
+#get_profile("/data/users/bportilla/runs/final_runs/model_v.02.02/alma_model_rotated.fits",
+ #           0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
