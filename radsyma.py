@@ -101,7 +101,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     angular_lim=linear_lim/d_au # rad
     angular_lim=(angular_lim*units.rad).to(units.arcsec).value # arcsec
     pixel_lim=int(round(angular_lim/pxsize))
-    dr=topx(dr,pxsize,d) 
+    dr=topx(dr,pxsize,d) # width of each annular aperture
     a_in_array=[]
     for i in np.arange(yc+dr,yc+0.5*pixel_lim,dr):
         a_in_array.append(i-xc)
@@ -116,14 +116,14 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     
     # Do a check?
     plt.imshow(data_obs)
-    apertures[0].plot(color='red',lw=1)
+    apertures[-1].plot(color='red',lw=1)
     plt.show()
 
     ############################################################
     # Define class "Bin"
     class Bin:
-        def __init__(self,aperture,theta_min,theta_max,plist):
-            self.aperture=aperture
+        def __init__(self,ID,theta_min,theta_max,plist):
+            self.ID=ID
             self.theta_min=theta_min
             self.theta_max=theta_max
             self.plist=plist
@@ -153,7 +153,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
             sigma=np.std(flux_array)
             beam_area=np.pi*(beam_x)*(beam_y)/(4*np.log(2)) 
             Nbeam=((aperture.area*pxsize**2)/Nbins)/beam_area
-            return sigma/(Nbeam)**0.5+(0.026)/1000.
+            return sigma/(Nbeam)**0.5
 
         def getError_pixel(self):
             flux_array=[]
@@ -239,29 +239,40 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
         # Writing result
         j=0 # Count over position angles
         for value in bin_list:
-            value.showFlux()
+            #value.showFlux()
             M[j][ii]=value.getFlux()
             E_beam[j][ii]=value.getError_beam(apertures[ii])
             E_pixel[j][ii]=value.getError_pixel()
             j+=1
-            print()
+            #print()
 
             
     for i in range(0,M.shape[0]):
-        M[i]=M[i]/max(M[i])
+        M[i]=M[i]#/max(M[i])
         E_beam[i]=E_beam[i]/max(M[i])
         E_pixel[i]=E_pixel[i]/max(M[i])
-        
-        
+
+    print(np.nanmax(E_beam),np.nanmax(E_pixel),M.max())
+#    sys.exit()
     ############################################################
     # Plotting
     fig=plt.figure(figsize=(5,12))
     gs=gridspec.GridSpec(int(Nbins*0.5),1,hspace=0)
     for i in range(0,int(Nbins*0.5)):
         ax=plt.subplot(gs[i,0])
- #       ax.plot(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),'.',color="red")
- #       ax.plot(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),'.',color="red")
-        ax.errorbar(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),yerr=np.reshape(E_beam[i:i+1,:],E_beam.shape[1]),marker=".",fmt="o")
+        #       ax.plot(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),'.',color="red")
+        #       ax.plot(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),'.',color="red")
+        
+        ax.errorbar(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),
+                    yerr=np.reshape(E_beam[i:i+1,:],E_beam.shape[1]),marker=".",fmt="o",color="red")
+        ax.errorbar(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),
+                    yerr=np.reshape(E_beam[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],E_beam.shape[1]),marker=".",fmt="o",color="red")
+        """
+        ax.errorbar(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),
+                    yerr=np.reshape(E_pixel[i:i+1,:],E_pixel.shape[1]),marker=".",fmt="o",color="red")
+        ax.errorbar(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),
+                    yerr=np.reshape(E_pixel[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],E_pixel.shape[1]),marker=".",fmt="o",color="red")
+        """
         ax.axvline(+74,0,1)
         ax.axvline(-74,0,1)
         ax.tick_params(labelleft=False,left=False)
@@ -274,4 +285,4 @@ get_profile("../PDS70/observations/PDS70_cont-final.fits",
             0.020,158.6,49.7,113.43,120.0,18,4,type='obs')
 
 #get_profile("/data/users/bportilla/runs/final_runs/model_v.02.02/alma_model_rotated.fits",
- #           0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
+#            0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
