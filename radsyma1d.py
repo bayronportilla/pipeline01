@@ -180,13 +180,10 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
             Npixel=len(self.plist)
             return sigma/(Npixel)**0.5
             
-
-
     M=[]
     E_beam=[]
     E_pixel=[]
     
-
     a_in_array=[i*pxsize*d for i in a_in_array]
     a_out_array=[i*pxsize*d for i in a_out_array]
     a_mid=np.array([(j-i)*0.5+i for (j,i) in zip(a_out_array,a_in_array)])
@@ -196,15 +193,8 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
 
         ############################################################
         # Creating bin
-
         sbin=Bin(ii,padir-0.5*widir,padir+0.5*widir,[])        
-        """
-        if ii==0:
-            midtheta=[]
-            midr=[]
-            for value in bin_list:
-                midtheta.append(value.getTheta())
-        """
+
 
         ############################################################
         # Creating aperture mask
@@ -252,23 +242,20 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
 
         ############################################################
         # Writing result
-
         #value.showFlux()
         M.append(sbin.getFlux()/sbin.getArea(apertures[ii]))
         E_beam.append(sbin.getError_beam(apertures[ii]))
         E_pixel.append(sbin.getError_pixel(apertures[ii]))
-        #print()
-    """
-    Mmax=M.max()
-    print()
-    print("Max value (Jy/beam/bin_area): %.1e"%(Mmax))
-    print("Max error (per beam): %.1e"%(np.nanmax(E_beam)))
-    print("Max error (per pixel): %.1e"%(np.nanmax(E_pixel)))
-    """
 
     M=np.array(M)
     E_beam=np.array(E_beam)
     E_pixel=np.array(E_pixel)
+
+    print()
+    print("Max value (Jy/beam/bin_area): %.1e"%(max(M)))
+    print("Max error (per beam): %.1e"%(np.nanmax(E_beam)))
+    print("Max error (per pixel): %.1e"%(np.nanmax(E_pixel)))
+
     """
     for i in range(0,M.shape[0]):
         M[i]=M[i]/Mmax
