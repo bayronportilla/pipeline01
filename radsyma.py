@@ -134,6 +134,10 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
                 print(i,aperture_data[pixel[0],pixel[1]])
                 i+=1
 
+        def getArea(self,aperture):
+            value=aperture.area/Nbins
+            return value
+
         def getFlux(self):
             flux=0.0
             for pixel in self.plist:
@@ -150,15 +154,19 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
             flux_array=[]
             for pixel in self.plist:
                 flux_array.append(aperture_data[pixel[0],pixel[1]])
+            area=aperture.area/Nbins
+            flux_array=np.array(flux_array)/area
             sigma=np.std(flux_array)
             beam_area=np.pi*(beam_x)*(beam_y)/(4*np.log(2)) 
             Nbeam=((aperture.area*pxsize**2)/Nbins)/beam_area
             return sigma/(Nbeam)**0.5
 
-        def getError_pixel(self):
+        def getError_pixel(self,aperture):
             flux_array=[]
             for pixel in self.plist:
                 flux_array.append(aperture_data[pixel[0],pixel[1]])
+            area=aperture.area/Nbins
+            flux_array=np.array(flux_array)/area
             sigma=np.std(flux_array)
             Npixel=len(self.plist)
             return sigma/(Npixel)**0.5
@@ -240,20 +248,24 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
         j=0 # Count over position angles
         for value in bin_list:
             #value.showFlux()
-            M[j][ii]=value.getFlux()
+            M[j][ii]=value.getFlux()/value.getArea(apertures[ii])
             E_beam[j][ii]=value.getError_beam(apertures[ii])
-            E_pixel[j][ii]=value.getError_pixel()
+            E_pixel[j][ii]=value.getError_pixel(apertures[ii])
             j+=1
             #print()
 
-            
-    for i in range(0,M.shape[0]):
-        M[i]=M[i]#/max(M[i])
-        E_beam[i]=E_beam[i]/max(M[i])
-        E_pixel[i]=E_pixel[i]/max(M[i])
+    Mmax=M.max()
+    print()
+    print("Max value (Jy/beam/bin_area): %.1e"%(Mmax))
+    print("Max error (per beam): %.1e"%(np.nanmax(E_beam)))
+    print("Max error (per pixel): %.1e"%(np.nanmax(E_pixel)))
 
-    print(np.nanmax(E_beam),np.nanmax(E_pixel),M.max())
-#    sys.exit()
+    for i in range(0,M.shape[0]):
+        M[i]=M[i]/Mmax
+        E_beam[i]=E_beam[i]/Mmax
+        E_pixel[i]=E_pixel[i]/Mmax
+
+
     ############################################################
     # Plotting
     fig=plt.figure(figsize=(5,12))
@@ -266,7 +278,8 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
         ax.errorbar(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),
                     yerr=np.reshape(E_beam[i:i+1,:],E_beam.shape[1]),marker=".",fmt="o",color="red")
         ax.errorbar(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),
-                    yerr=np.reshape(E_beam[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],E_beam.shape[1]),marker=".",fmt="o",color="red")
+                    yerr=np.reshape(E_beam[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],E_beam.shape[1]),
+                    marker=".",fmt="o",color="red")
         """
         ax.errorbar(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),
                     yerr=np.reshape(E_pixel[i:i+1,:],E_pixel.shape[1]),marker=".",fmt="o",color="red")
