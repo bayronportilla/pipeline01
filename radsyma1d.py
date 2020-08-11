@@ -268,7 +268,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
     # Plotting
     fig=plt.figure(figsize=(5,12))
     ax=plt.axes()
-    ax.errorbar(a_mid,M,yerr=E_beam,marker=".",fmt="o",color="red")
+    ax.errorbar(a_mid,M,yerr=E_beam,marker=".",fmt="-",color="red")
     #   ax.tick_params(labelleft=False,left=False)
     #    ax.set_ylabel(r"%.1f"%((midtheta[i]*units.rad).to(units.deg).value))
     ax.set_xlabel(r"$r$(AU)")
@@ -276,7 +276,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
 
 
 get_profile("../PDS70/observations/PDS70_cont-final.fits",
-            0.020,158.6,49.7,113.43,120.0,0,20,4,type='obs')
+            0.020,158.6,49.7,113.43,120.0,277,20,4,type='obs')
 
 #get_profile("/data/users/bportilla/runs/final_runs/model_v.02.02/alma_model_rotated.fits",
 #            0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
