@@ -51,7 +51,6 @@ def topx(l,pxsize,d):
 
 def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
     
-
     ############################################################
     # 
     # Extract a radial cut of the brightness along diffent 
@@ -92,6 +91,10 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
     ############################################################
     # Derived properties
     angle_annulus=((PA_disk-90.0)*units.deg).to(units.rad).value 
+    if padir<=270.0:
+        padir=padir+90.0
+    else:
+        padir=padir-270.0
     e=np.sin((inc*units.deg).to(units.rad).value) 
     d_au=(d*units.pc).to(units.au).value 
     xc_array=[]
@@ -275,8 +278,8 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
     plt.show()
 
 
-get_profile("../PDS70/observations/PDS70_cont-final.fits",
-            0.020,158.6,49.7,113.43,120.0,277,20,4,type='obs')
+#get_profile("../PDS70/observations/PDS70_cont-final.fits",
+#            0.020,158.6,49.7,113.43,120.0,277,20,4,type='obs')
 
-#get_profile("/data/users/bportilla/runs/final_runs/model_v.02.02/alma_model_rotated.fits",
-#            0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
+get_profile("/data/users/bportilla/runs/final_runs/model_v.03/alma_model_rotated.fits",
+            0.004,158.6,49.7,113.43,120.0,326.8,20,4,type='mod')
