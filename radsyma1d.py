@@ -334,7 +334,7 @@ e5=get_profile("../PDS70/observations/PDS70_cont-final.fits",
                   0.020,158.6,49.7,113.43,120.0,137,20,4,type='obs')[2]
 
 plt.errorbar(x1,y1/max(y1),yerr=e1/max(y1),marker=".",fmt="--",color="red",label="$57^\circ$")
-plt.errorbar(x1,y2/max(y2),yerr=e2/max(y2),marker=".",fmt="-",color="blue",label="$77^\circ$")
+plt.errorbar(x1,y2/max(y2),yerr=e2/max(y2),marker=".",fmt="--",color="blue",label="$77^\circ$")
 plt.errorbar(x1,y3/max(y3),yerr=e3/max(y3),marker=".",fmt="--",color="green",label="$97^\circ$")
 plt.errorbar(x1,y4/max(y4),yerr=e4/max(y4),marker=".",fmt="--",color="orange",label="$117^\circ$")
 plt.errorbar(x1,y5/max(y5),yerr=e5/max(y5),marker=".",fmt="--",color="magenta",label=r"$137^\circ$")
