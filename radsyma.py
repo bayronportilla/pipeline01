@@ -76,13 +76,13 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     if kwargs['type']=='obs':
         hdulist=fits.open(file)
         data_obs=hdulist[0].data[0][0]
-
+        """
         xc=data_obs.shape[0]*0.5
         yc=data_obs.shape[1]*0.5
         """
         xc=hdulist[0].header['CRPIX1']
         yc=hdulist[0].header['CRPIX2']
-        """
+        
         
 
     elif kwargs['type']=='mod':
@@ -119,12 +119,12 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
                for (ain,aout,bout) in zip(a_in_array,a_out_array,b_out_array)]
 
     print("Number of annular apertures: %d"%len(apertures))
-
+    """
     # Do a check?
     plt.imshow(data_obs)
     apertures[-1].plot(color='red',lw=1)
     plt.show()
-
+    """
     ############################################################
     # Define class "Bin"
     class Bin:
@@ -151,13 +151,8 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
             return flux
 
         def getTheta(self):
-            value=(self.theta_max-self.theta_min)*0.5+self.theta_min
-            """
-            if value<=0.5*np.pi:
-                value=value+1.5*np.pi
-            else:
-                value=value-0.5*np.pi
-            """
+            value=self.theta_min#(self.theta_max-self.theta_min)*0.5+self.theta_min
+
             return value
 
         def getError_beam(self,aperture):
@@ -271,6 +266,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
             E_pixel[j][ii]=value.getError_pixel(apertures[ii])
             j+=1
             #print()
+    print(midtheta*180/np.pi)
 
     Mmax=M.max()
     print()
