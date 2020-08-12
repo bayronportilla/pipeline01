@@ -76,8 +76,14 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     if kwargs['type']=='obs':
         hdulist=fits.open(file)
         data_obs=hdulist[0].data[0][0]
+
+        xc=data_obs.shape[0]*0.5
+        yc=data_obs.shape[1]*0.5
+        """
         xc=hdulist[0].header['CRPIX1']
         yc=hdulist[0].header['CRPIX2']
+        """
+        
 
     elif kwargs['type']=='mod':
         hdulist=fits.open(file)
@@ -113,7 +119,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
                for (ain,aout,bout) in zip(a_in_array,a_out_array,b_out_array)]
 
     print("Number of annular apertures: %d"%len(apertures))
-    
+
     # Do a check?
     plt.imshow(data_obs)
     apertures[-1].plot(color='red',lw=1)
@@ -146,6 +152,12 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
 
         def getTheta(self):
             value=(self.theta_max-self.theta_min)*0.5+self.theta_min
+            """
+            if value<=0.5*np.pi:
+                value=value+1.5*np.pi
+            else:
+                value=value-0.5*np.pi
+            """
             return value
 
         def getError_beam(self,aperture):
@@ -172,6 +184,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
             return sigma/(Npixel)**0.5
             
 
+    #thetas=np.linspace(0,2*np.pi,Nbins+1)
     thetas=np.linspace(0,2*np.pi,Nbins+1)
     M=np.zeros((Nbins,len(apertures)))
     E_beam=np.zeros((Nbins,len(apertures)))
@@ -197,7 +210,12 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
             midtheta=[]
             midr=[]
             for value in bin_list:
-                midtheta.append(value.getTheta())
+                angle=value.getTheta()-0.5*np.pi
+                if angle<0.0:
+                    angle=2*np.pi+angle
+                midtheta.append(angle)
+            midtheta=np.array(midtheta)
+
 
         ############################################################
         # Creating aperture mask
@@ -234,7 +252,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
         ############################################################
         # Filling in bin_list
         for point in pixel_list:
-            phi=np.arctan2(point[0],point[1])
+            phi=np.arctan2(point[0],point[1])#-0.5*np.pi
             if phi<0.0:
                 phi=2*np.pi+phi
             for sbin in bin_list:
@@ -267,14 +285,38 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
 
 
     ############################################################
-    # Plotting
+    # Plotting    
+    index_to_swap=[]
+    for i in range(0,len(midtheta)):
+        if 1.5*np.pi<=midtheta[i]<2*np.pi:
+            index_to_swap.append(i)
+    
+    M_new=np.zeros((M.shape[0],M.shape[1]))
+    E_beam_new=np.zeros((E_beam.shape[0],E_beam.shape[1]))
+    E_pixel_new=np.zeros((E_pixel.shape[0],E_pixel.shape[1]))
+    
+    M_new[M.shape[0]-len(index_to_swap):M.shape[0]]=M[0:len(index_to_swap)]
+    M_new[0:M.shape[0]-len(index_to_swap)]=M[len(index_to_swap):M.shape[0]]
+    M=M_new
+
+    E_beam_new[E_beam.shape[0]-len(index_to_swap):E_beam.shape[0]]=E_beam[0:len(index_to_swap)]
+    E_beam_new[0:E_beam.shape[0]-len(index_to_swap)]=E_beam[len(index_to_swap):E_beam.shape[0]]
+    E_beam=E_beam_new
+
+    E_pixel_new[E_pixel.shape[0]-len(index_to_swap):E_pixel.shape[0]]=E_pixel[0:len(index_to_swap)]
+    E_pixel_new[0:E_pixel.shape[0]-len(index_to_swap)]=E_pixel[len(index_to_swap):E_pixel.shape[0]]
+    E_pixel=E_pixel_new
+
+
+    midtheta=np.sort(midtheta)
+
+
     fig=plt.figure(figsize=(5,12))
     gs=gridspec.GridSpec(int(Nbins*0.5),1,hspace=0)
     for i in range(0,int(Nbins*0.5)):
         ax=plt.subplot(gs[i,0])
         #       ax.plot(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),'.',color="red")
         #       ax.plot(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),'.',color="red")
-        
         ax.errorbar(a_mid,np.reshape(M[i:i+1,:],M.shape[1]),
                     yerr=np.reshape(E_beam[i:i+1,:],E_beam.shape[1]),marker=".",fmt="o",color="red")
         ax.errorbar(-a_mid,np.reshape(M[i+int(0.5*Nbins):i+1+int(0.5*Nbins),:],M.shape[1]),
@@ -294,8 +336,8 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     plt.show()
 
 
-get_profile("../PDS70/observations/PDS70_cont-final.fits",
-            0.020,158.6,49.7,113.43,120.0,18,4,type='obs')
+#get_profile("../PDS70/observations/PDS70_cont-final.fits",
+#            0.020,158.6,49.7,113.43,120.0,18,4,type='obs')
 
-#get_profile("/data/users/bportilla/runs/final_runs/model_v.02.02/alma_model_rotated.fits",
-#            0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
+get_profile("/data/users/bportilla/runs/final_runs/model_v.02.02/alma_model_rotated.fits",
+            0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
