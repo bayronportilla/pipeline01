@@ -78,9 +78,13 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
     if kwargs['type']=='obs':
         hdulist=fits.open(file)
         data_obs=hdulist[0].data[0][0]
+        """
         xc=hdulist[0].header['CRPIX1']
         yc=hdulist[0].header['CRPIX2']
-
+        """
+        xc=data_obs.shape[1]*0.5
+        yc=data_obs.shape[0]*0.5
+        
     elif kwargs['type']=='mod':
         hdulist=fits.open(file)
         data_obs=hdulist[0].data
@@ -91,7 +95,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
     ############################################################
     # Derived properties
     angle_annulus=((PA_disk-90.0)*units.deg).to(units.rad).value 
-    if padir<=270.0:
+    if padir<270.0:
         padir=padir+90.0
     else:
         padir=padir-270.0
@@ -167,7 +171,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
             for pixel in self.plist:
                 flux_array.append(aperture_data[pixel[0],pixel[1]])
             area=aperture.area/Nbins
-            flux_array=np.array(flux_array)/area
+            flux_array=np.array(flux_array)#/area
             sigma=np.std(flux_array)
             beam_area=np.pi*(beam_x)*(beam_y)/(4*np.log(2)) 
             Nbeam=((aperture.area*pxsize**2)/Nbins)/beam_area
@@ -191,7 +195,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
     a_out_array=[i*pxsize*d for i in a_out_array]
     a_mid=np.array([(j-i)*0.5+i for (j,i) in zip(a_out_array,a_in_array)])
     
-
+    meanpxn=[]
     for ii in range(0,len(apertures)):
 
         ############################################################
@@ -249,54 +253,89 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,padir,widir,dr,**kwargs):
         M.append(sbin.getFlux()/sbin.getArea(apertures[ii]))
         E_beam.append(sbin.getError_beam(apertures[ii]))
         E_pixel.append(sbin.getError_pixel(apertures[ii]))
+        meanpxn.append(len(sbin.plist))
+        #print("I have %.1f pixels"%(len(sbin.plist)))
 
+    #print(np.mean(meanpxn))
+    
     M=np.array(M)
     E_beam=np.array(E_beam)
     E_pixel=np.array(E_pixel)
-    """
+    
     print()
     print("Max value (Jy/beam/bin_area): %.1e"%(max(M)))
     print("Max error (per beam): %.1e"%(np.nanmax(E_beam)))
     print("Max error (per pixel): %.1e"%(np.nanmax(E_pixel)))
-    """
     
+
     """
     ############################################################
     # Plotting
     fig=plt.figure(figsize=(5,12))
     ax=plt.axes()
-    ax.errorbar(a_mid,M,yerr=E_beam,marker=".",fmt="-",color="red")
+    ax.errorbar(a_mid,M,yerr=E_beam,marker=".",fmt="-",color="red",capsize=2,elinewidth=0.5)
     #   ax.tick_params(labelleft=False,left=False)
     #    ax.set_ylabel(r"%.1f"%((midtheta[i]*units.rad).to(units.deg).value))
     ax.set_xlabel(r"$r$(AU)")
+    #ax.set_ylim(0,0.0175)
     plt.show()
     """
     return a_mid,M,E_beam,E_pixel
 
 
-"""
+get_profile("../PDS70/observations/PDS70_cont-final.fits",
+               0.020,158.6,49.7,113.43,150.0,68.6,20,4,type='obs')
+
+
+
+awidth=4
+
 x1=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-               0.020,158.6,49.7,113.43,120.0,277,20,4,type='obs')[0]
+               0.020,158.6,49.7,113.43,120.0,338.6,20,awidth,type='obs')[0]
 y1=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-               0.020,158.6,49.7,113.43,120.0,257,20,4,type='obs')[1]
+               0.020,158.6,49.7,113.43,120.0,338.6,20,awidth,type='obs')[1]
 y2=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-                  0.020,158.6,49.7,113.43,120.0,277,20,4,type='obs')[1]
+                  0.020,158.6,49.7,113.43,120.0,248.6,20,awidth,type='obs')[1]
 y3=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-                  0.020,158.6,49.7,113.43,120.0,297,20,4,type='obs')[1]
+                  0.020,158.6,49.7,113.43,120.0,158.6,20,awidth,type='obs')[1]
 y4=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-                  0.020,158.6,49.7,113.43,120.0,237,20,4,type='obs')[1]
-y5=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-                  0.020,158.6,49.7,113.43,120.0,317,20,4,type='obs')[1]
+                  0.020,158.6,49.7,113.43,120.0,68.6,20,awidth,type='obs')[1]
+
 e1=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-               0.020,158.6,49.7,113.43,120.0,257,20,4,type='obs')[2]
+               0.020,158.6,49.7,113.43,120.0,338.6,20,awidth,type='obs')[2]
 e2=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-                  0.020,158.6,49.7,113.43,120.0,277,20,4,type='obs')[2]
+                  0.020,158.6,49.7,113.43,120.0,248.6,20,awidth,type='obs')[2]
 e3=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-                  0.020,158.6,49.7,113.43,120.0,297,20,4,type='obs')[2]
+                  0.020,158.6,49.7,113.43,120.0,158.6,20,awidth,type='obs')[2]
 e4=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-                  0.020,158.6,49.7,113.43,120.0,237,20,4,type='obs')[2]
+                  0.020,158.6,49.7,113.43,120.0,68.6,20,awidth,type='obs')[2]
+
+fig=plt.figure(figsize=(5,12))
+gs=gridspec.GridSpec(4,1,hspace=0)
+ax0=plt.subplot(gs[0,0])
+ax1=plt.subplot(gs[1,0])
+ax2=plt.subplot(gs[2,0])
+ax3=plt.subplot(gs[3,0])
+ax0.errorbar(x1,y1/max(y1),yerr=e1/max(y1),marker=".",fmt="-",color="red",label="NW",capsize=2,elinewidth=0.5)
+ax1.errorbar(x1,y2/max(y2),yerr=e2/max(y2),marker=".",fmt="-",color="green",label="SW",capsize=2,elinewidth=0.5)
+ax2.errorbar(x1,y3/max(y3),yerr=e3/max(y3),marker=".",fmt="-",color="orange",label="SE",capsize=2,elinewidth=0.5)
+ax3.errorbar(x1,y4/max(y4),yerr=e4/max(y4),marker=".",fmt="-",color="blue",label="NE",capsize=2,elinewidth=0.5)
+ax0.legend()
+ax1.legend()
+ax2.legend()
+ax3.legend()
+ax3.set_xlabel(r"$r$ (AU)")
+plt.show()
+
+
+
+sys.exit()
+
+y5=get_profile("../PDS70/observations/PDS70_cont-final.fits",
+                  0.020,158.6,49.7,113.43,120.0,317,20,awidth,type='obs')[1]
+
 e5=get_profile("../PDS70/observations/PDS70_cont-final.fits",
-                  0.020,158.6,49.7,113.43,120.0,317,20,4,type='obs')[2]
+                  0.020,158.6,49.7,113.43,120.0,317,20,awidth,type='obs')[2]
 
 plt.errorbar(x1,y4/max(y4),yerr=e4/max(y4),marker=".",fmt="--",color="orange",label="$237^\circ$")
 plt.errorbar(x1,y1/max(y1),yerr=e1/max(y1),marker=".",fmt="--",color="red",label="$257^\circ$")
@@ -307,8 +346,8 @@ plt.xlabel(r"$r$ (AU)")
 plt.axvspan(34.1,43.1, alpha=0.2, color='red')
 plt.legend()
 plt.show()
-"""
 
+"""
 x1=get_profile("../PDS70/observations/PDS70_cont-final.fits",
                0.020,158.6,49.7,113.43,120.0,57,20,4,type='obs')[0]
 y1=get_profile("../PDS70/observations/PDS70_cont-final.fits",
@@ -341,7 +380,7 @@ plt.errorbar(x1,y5/max(y5),yerr=e5/max(y5),marker=".",fmt="--",color="magenta",l
 plt.xlabel(r"$r$ (AU)")
 plt.legend()
 plt.show()
-
+"""
 
 sys.exit()
 get_profile("../PDS70/observations/PDS70_cont-final.fits",

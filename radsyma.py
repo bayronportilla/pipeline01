@@ -166,6 +166,7 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
             sigma=np.std(flux_array)
             beam_area=np.pi*(beam_x)*(beam_y)/(4*np.log(2)) 
             Nbeam=((aperture.area*pxsize**2)/Nbins)/beam_area
+            print("I have %.1f pixels"%len(self.plist))
             return sigma/(Nbeam)**0.5
 
         def getError_pixel(self,aperture):
@@ -259,14 +260,15 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
         ############################################################
         # Writing result
         j=0 # Count over position angles
+        print("radius=%.2f"%a_mid[ii])
         for value in bin_list:
-            #value.showFlux()
+            #value.getError_beam(apertures[ii])
             M[j][ii]=value.getFlux()/value.getArea(apertures[ii])
             E_beam[j][ii]=value.getError_beam(apertures[ii])
             E_pixel[j][ii]=value.getError_pixel(apertures[ii])
             j+=1
-            #print()
-    print(midtheta*180/np.pi)
+            
+
 
     Mmax=M.max()
     print()
@@ -274,12 +276,13 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     print("Max error (per beam): %.1e"%(np.nanmax(E_beam)))
     print("Max error (per pixel): %.1e"%(np.nanmax(E_pixel)))
 
+
     for i in range(0,M.shape[0]):
         M[i]=M[i]/Mmax
         E_beam[i]=E_beam[i]/Mmax
         E_pixel[i]=E_pixel[i]/Mmax
 
-
+    
     ############################################################
     # Plotting    
     index_to_swap=[]
@@ -332,8 +335,8 @@ def get_profile(file,pxsize,PA_disk,inc,d,size,Nbins,dr,**kwargs):
     plt.show()
 
 
-#get_profile("../PDS70/observations/PDS70_cont-final.fits",
-#            0.020,158.6,49.7,113.43,120.0,18,4,type='obs')
+get_profile("../PDS70/observations/PDS70_cont-final.fits",
+            0.020,158.6,49.7,113.43,120.0,18,4,type='obs')
 
-get_profile("/data/users/bportilla/runs/final_runs/model_v.02.02/alma_model_rotated.fits",
-            0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
+#get_profile("/data/users/bportilla/runs/final_runs/model_v.02.02/alma_model_rotated.fits",
+#            0.004,158.6,49.7,113.43,120.0,18,4,type='mod')
