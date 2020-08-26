@@ -158,10 +158,27 @@ def prepare_alma_image(data,PA_disk,**kwargs):
     data_rot=scipy.ndimage.rotate(data,-(PA_disk-90),reshape=False)
 
 
+    ############################################################
     # Creating fits file
-    hdu=fits.PrimaryHDU(data_rot)
-    hdu.writeto("../alma_model_rotated.fits",overwrite=True)
+    beam_x=(0.074*units.arcsec).to(units.deg).value
+    beam_y=(0.057*units.arcsec).to(units.deg).value
+    beam_angle=63.0
 
+    hdr=fits.Header()
+    hdr.append(('bunit','mJy/beam',None))
+    hdr.append(('bmaj',beam_x,'beam major axis in deg'))
+    hdr.append(('bmin',beam_y,'beam minor axis in deg'))
+    hdr.append(('bpa',beam_angle,'position angle of the beam in deg'))
+    hdr.append(('cdelt1',0.0,None))
+    hdr.append(('cdelt2',0.0,None))
+    hdr.append(('crpix1',data.shape[0]*0.5,None))
+    hdr.append(('crpix2',data.shape[1]*0.5,None))
+    hdr.append(('crval1',+2.120421033167e2,None))
+    hdr.append(('crval2',-4.139805265833e1 ,None))
+    hdr.append(('ctype1','RA---SIN',None))
+    hdr.append(('ctype2','DEC--SIN',None))
+    hdu=fits.PrimaryHDU(data_rot,header=hdr)
+    hdu.writeto("../alma_model_rotated.fits",overwrite=True)
 
     return data_rot
 
