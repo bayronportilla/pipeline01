@@ -156,7 +156,7 @@ def prepare_alma_image(data,PA_disk,**kwargs):
     ############################################################
     # Rotate image        
     data_rot=scipy.ndimage.rotate(data,-(PA_disk-90),reshape=False)
-
+    data_rot=data_rot/1000
 
     ############################################################
     # Creating fits file
@@ -165,7 +165,7 @@ def prepare_alma_image(data,PA_disk,**kwargs):
     beam_angle=63.0
 
     hdr=fits.Header()
-    hdr.append(('bunit','mJy/beam',None))
+    hdr.append(('bunit','Jy/beam',None))
     hdr.append(('bmaj',beam_x,'beam major axis in deg'))
     hdr.append(('bmin',beam_y,'beam minor axis in deg'))
     hdr.append(('bpa',beam_angle,'position angle of the beam in deg'))
