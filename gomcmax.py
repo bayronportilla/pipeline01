@@ -15,7 +15,6 @@ def get_profile(file,PA_disk,inc,d,padir,widir,dr):
                                dist=d, 
                                PA_min=PAmin,PA_max=PAmax,dr=dr,
                                assume_correlated=False)
-                               #exclude_PA=False)
     return x,y,dy
 
 ddisk=113.43
@@ -25,21 +24,26 @@ incdisk=49.7
 padir=118.4
 #padir=-11.8
 widir=20.0
-nbins=3 # odd integer
+nbins=1 # odd integer
 
 fig=plt.figure()
 for i in range(int(-0.5*(nbins-1)),int(0.5*(nbins-1))+1):
     angle=padir+i*widir
     x,y,dy=get_profile('../alma_model_rotated.fits',
                        padisk,incdisk,ddisk,angle,widir,drsample)
-    plt.plot(x*ddisk,y,markersize=4,label="PA=%.1f deg"%(angle+padisk))
+    plt.plot(x*ddisk,y,'.',markersize=4,label="PA=%.1f deg"%(angle+padisk))
 
-plt.axvspan(18,24,color='red',alpha=0.1)
+plt.axvspan(34.1,43.1,color='red',alpha=0.1)
 plt.xlabel("r (arcsec)")
 plt.legend()
 plt.xlim(0,120)
 plt.show()
 #fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/reports/report:27-08-2020/06-coneobs.png")
+
+f=open("rp_cdir_mod.dat","w")
+for (i,j) in zip(x,y):
+    f.write("%.15e %.15e\n"%(i*ddisk,j))
+f.close()
 sys.exit()
 
 
