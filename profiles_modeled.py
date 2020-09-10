@@ -181,8 +181,8 @@ def output_data():
     ax4.set_ylim(-0.11,4.0)
     ax3.set_ylim(0.04,)
     
-    xmin,xmax=(450,560)
-    ymin,ymax=(450,560)
+    xmin,xmax=(200,800)
+    ymin,ymax=(200,800)
     ax1.set_xlim(xmin,xmax)
     ax1.set_ylim(ymax,ymin)
     ax2.set_xlim(200,800)
