@@ -6,10 +6,11 @@ from photutils import EllipticalAnnulus,CircularAnnulus,EllipticalAperture
 from photutils import aperture_photometry
 from mcmax3d_analysis.mcmax3d_convolution import convolve_model
 import sys
+from gofish import imagecube
+
 plt.style.use('fancy')
 
 def image(fits_image,beam_x,beam_y,beam_angle):
-
 
     ############################################################
     # Absolute paths to files
@@ -55,8 +56,6 @@ def image(fits_image,beam_x,beam_y,beam_angle):
 
     ############################################################
     # Convolve?
-    #beam_x=0.074 # arcsec
-    #beam_y=0.057 # arcsec
     data_mod=convolve_model(data_mod,fov,npix,beam_x,beam_y,beam_angle) # mJy/arcsec^2
 
 
@@ -64,11 +63,28 @@ def image(fits_image,beam_x,beam_y,beam_angle):
     # Convertion from mJy/arcsec^2 to mJy/beam
     beam_area=np.pi*(beam_x)*(beam_y)/(4*np.log(2)) 
     data_mod=data_mod*beam_area # mJy/beam
-    print()
     print("Maximum value of the density flux in ALMA image (mJy/beam)",data_mod.max())
-    print()
-
     return data_mod
+
+
+def radial_profile_gofish(data,disk_inc,disk_pa,d,x0_off,y0_off,lim):
+    cube=imagecube(data,FOV=3)
+    xm, ym, dym = cube.radial_profile(inc=disk_inc,
+                                      PA=disk_pa,
+                                      dist=d,
+                                      x0=x0_off,
+                                      y0=y0_off)
+    xm=xm*d
+    ym=ym # mJy/beam
+    dym=dym
+
+    f=open("../alma_radial_profile_modeled.dat","w")
+    for (i,j,k) in zip(xm,ym,dym):
+        if i<=lim:
+            f.write("%.13e %.13e %.13e \n"%(i,j,k))
+    f.close()
+
+    return None
 
 
 def radial_profile(data,lim):
@@ -189,5 +205,3 @@ def radial_profile(data,lim):
         file.write('%.15e %.15e \n'%(r_au[i],brightness[i]))
 
     return None
-
-#alma()

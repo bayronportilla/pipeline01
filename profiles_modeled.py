@@ -69,6 +69,7 @@ def output_data():
     odata=np.loadtxt("alma_radial_profile_observed.dat")
     r_obs=odata[:,0:1]
     b_obs=odata[:,1:2]
+    db_obs=odata[:,2:3]
 
     odata_j_1=np.loadtxt("jband_radial_cut_0FWHM_smoothed.dat")
     r_obs_j_1=odata_j_1[:,0:1]
@@ -152,7 +153,7 @@ def output_data():
  
     msize=7.0
     lwidth=3.0
-    ax3.plot(r_obs,b_obs,label="observation",linewidth=lwidth)
+    ax3.errorbar(r_obs,b_obs,db_obs,fmt='.',label="observation")
     ax3.plot(r_alma,b_alma,'.',markersize=msize,label="model")
     ax4.plot(r_obs_j_1,b_obs_j_1,"+",label="observation 0.0FWHM")
     ax4.plot(r_jband,b_jband,".",linewidth=lwidth,label="model")
@@ -166,6 +167,8 @@ def output_data():
 
     ############################################################
     # Scales
+    ax3.set_xscale('log')
+    ax3.set_yscale('log')
     ax5.set_xscale('log')
     ax5.set_yscale('log')
     #ax6.set_xscale('log')
@@ -176,13 +179,14 @@ def output_data():
     ax5.set_ylim(1e-17,1e-12)
     ax6.set_ylim(1e-5,1e1)
     ax4.set_ylim(-0.11,4.0)
+    ax3.set_ylim(0.04,)
     
-    xmin,xmax=(200,800)
-    ymin,ymax=(200,800)
+    xmin,xmax=(450,560)
+    ymin,ymax=(450,560)
     ax1.set_xlim(xmin,xmax)
     ax1.set_ylim(ymax,ymin)
-    ax2.set_xlim(xmin,xmax)
-    ax2.set_ylim(ymax,ymin)
+    ax2.set_xlim(200,800)
+    ax2.set_ylim(800,200)
     
 
     ############################################################

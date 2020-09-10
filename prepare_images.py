@@ -145,12 +145,13 @@ def prepare_alma_image(data,PA_disk,**kwargs):
         else:
             continue
 
-            
+
     ############################################################
     # Derived quantities
     pxsize=fov/npix # pixel scale (arcsec/px)
     phi=(phi*units.deg).to(units.rad).value # PA from north to east (rad)
     e=np.sin(theta) # eccentricity of the annulus
+    cdelt=(fov*units.mas).to(units.deg).value
 
 
     ############################################################
@@ -169,8 +170,8 @@ def prepare_alma_image(data,PA_disk,**kwargs):
     hdr.append(('bmaj',beam_x,'beam major axis in deg'))
     hdr.append(('bmin',beam_y,'beam minor axis in deg'))
     hdr.append(('bpa',beam_angle,'position angle of the beam in deg'))
-    hdr.append(('cdelt1',-5.555555555556E-06,None))
-    hdr.append(('cdelt2',+5.555555555556E-06,None))
+    hdr.append(('cdelt1',-cdelt,None))
+    hdr.append(('cdelt2',+cdelt,None))
     hdr.append(('crpix1',data.shape[0]*0.5,None))
     hdr.append(('crpix2',data.shape[1]*0.5,None))
     hdr.append(('crval1',+2.120421033167e2,None))
@@ -196,7 +197,7 @@ def peak_flux_alma_model(alma_model_rotated):
         
     ############################################################
     # Loading Image.out info
-    imfile=open("../Image_jband.out").readlines()
+    imfile=open("../Image_alma.out").readlines()
     for line in imfile:
         if line.split('=')[0]=='MCobs:fov':
             fov=float(line.split('=')[1].split('!')[0])
