@@ -28,11 +28,11 @@ def toPX(l,pxsize,d):
 def combine_Polarizations(Q,U,phi0):
     Qphi= np.zeros(np.shape(Q))
     Uphi= np.zeros(np.shape(Q))
-    x0= np.shape(Q)[1]/2#-0.5
-    y0= np.shape(Q)[0]/2#-0.5
+    x0= np.shape(Q)[0]*0.5-0.5
+    y0= np.shape(Q)[1]*0.5-0.5
     phi0=(phi0*units.deg).to(units.rad).value
-    for j in range(np.shape(Q)[0]): # over rows
-            for i in range(np.shape(Q)[1]): # over columns
+    for i in range(np.shape(Q)[0]): # over rows
+            for j in range(np.shape(Q)[1]): # over columns
                 phi= np.arctan2((float(i)-x0),(float(j)-y0))+phi0
                 Qphi[i,j]= Q[i,j]*np.cos(2*phi)+U[i,j]*np.sin(2*phi)
                 Uphi[i,j]= -Q[i,j]*np.sin(2*phi)+U[i,j]*np.cos(2*phi)
