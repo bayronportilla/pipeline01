@@ -6,14 +6,6 @@ import matplotlib.gridspec as gridspec
 from astropy.io import fits
 from astropy.coordinates import Angle
 import astropy.units as u
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
-
-=======
->>>>>>> 8b0fd7aea4637eec9647d22ae71ed5719930514d
->>>>>>> 6ba1bec7cadf528716ff83d638508f496d2011c0
 
 def get_profile(file,PA_disk,inc,d,padir,widir,dr):
     cube=imagecube(file,FOV=3)
@@ -30,13 +22,7 @@ drsample=0.02
 padisk=158.6
 incdisk=49.7
 padir=118.4
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
 #padir=-11.8
->>>>>>> 8b0fd7aea4637eec9647d22ae71ed5719930514d
->>>>>>> 6ba1bec7cadf528716ff83d638508f496d2011c0
 widir=20.0
 nbins=1 # odd integer
 
