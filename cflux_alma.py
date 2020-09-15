@@ -68,7 +68,7 @@ def image(fits_image,beam_x,beam_y,beam_angle):
 
 
 def radial_profile_gofish(data,disk_inc,disk_pa,d,x0_off,y0_off,lim):
-    cube=imagecube(data,FOV=3)
+    cube=imagecube(data)
     xm, ym, dym = cube.radial_profile(inc=disk_inc,
                                       PA=disk_pa,
                                       dist=d,
