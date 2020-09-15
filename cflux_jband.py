@@ -142,8 +142,8 @@ def radial_profile(data,lim):
     angular_lim=(angular_lim*units.rad).to(units.arcsec).value # arcsec
     pixel_lim=int(round(angular_lim/pxsize))
 
-    xc=0.5*data.shape[0] # Image center in data coordinates
-    yc=0.5*data.shape[1] # Image center in data coordinates
+    xc=0.5*data.shape[0]-0.5 # Image center in data coordinates
+    yc=0.5*data.shape[1]-0.5 # Image center in data coordinates
     dr=1.0 # Width of the annulus
     w=1.0
     h=1.0
