@@ -38,7 +38,7 @@ nbins=1 # Number of cones (odd integer)
 fig=plt.figure()
 for i in range(int(-0.5*(nbins-1)),int(0.5*(nbins-1))+1):
     angle=padir+i*widir
-    x,y,dy=radial_cut(padisk,incdisk,ddisk,angle,widir,drsample)
+    x,y,dy=radial_cut(padisk,incdisk,ddisk,angle,widir,drsample,0.0,0.0)
     plt.errorbar(x*ddisk,y*1000,dy*1000,fmt=".",markersize=4,elinewidth=1,
                  label="PA=%.1f deg"%(angle+padisk))
     
