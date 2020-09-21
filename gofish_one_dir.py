@@ -49,7 +49,6 @@ plt.legend()
 plt.xlim(0,120)
 plt.show()
 #fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/reports/report:11-09-2020/coneobs_b.png")
-sys.exit()
 
 ############################################################
 # Writing file
