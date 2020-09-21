@@ -39,7 +39,7 @@ fig=plt.figure()
 for i in range(int(-0.5*(nbins-1)),int(0.5*(nbins-1))+1):
     angle=padir+i*widir
     x,y,dy=radial_cut(padisk,incdisk,ddisk,angle,widir,drsample,0.0,0.0)
-    plt.errorbar(x*ddisk,y*1000,dy*1000,fmt=".",markersize=4,elinewidth=1,
+    plt.errorbar(x*ddisk,y,dy,fmt=".",markersize=4,elinewidth=1,
                  label="PA=%.1f deg"%(angle+padisk))
     
 plt.axvspan(18.0,24.0,color='red',alpha=0.1)
@@ -52,9 +52,9 @@ plt.show()
 
 ############################################################
 # Writing file
-f=open("../cut_along_c_obs.dat","w")
+f=open("../cut_along_c_mod.dat","w")
 for (i,j,k) in zip(x,y,dy):
-    f.write("%.15e %.15e %.15e\n"%(i*ddisk,j*1000,k*1000)) # AU,mJy/beam,mJy/beam
+    f.write("%.15e %.15e %.15e\n"%(i*ddisk,j,k)) # AU,mJy/beam,mJy/beam
 f.close()
 sys.exit()
 
