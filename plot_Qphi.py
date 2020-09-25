@@ -119,7 +119,7 @@ def make_plot(observation,pobs,pxsizeobs,model,pmod,pxsizemod,**kwargs):
     
 
     # Axes' ticks parameters
-    ax_1.tick_params(top='on',right='on',labelright="off") 
+    ax_1.tick_params(top='on',right='on',labelright="off",labelsize=20) 
     ax_2.tick_params(top='on',right='on',labelleft="off")
     ax_1.locator_params(axis='y',nbins=5)
     ax_2.locator_params(axis='y',nbins=5)
@@ -137,7 +137,7 @@ def make_plot(observation,pobs,pxsizeobs,model,pmod,pxsizemod,**kwargs):
     fig.text(0.06,0.5,r'$\Delta \mathrm{Dec.}$ (arcsec)', va='center', ha='center', rotation='vertical',fontsize=lsize)
 
 
-    fig.savefig("output/Qphi.png")
+    #fig.savefig("output/Qphi.png")
     plt.show()
     
     return "File generated!"
