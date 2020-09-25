@@ -151,7 +151,7 @@ pxsize_mod=0.004
 
 make_plot("/Users/users/bportilla/Documents/first_project/scripts/PDS70/observations/PDS_70_2017-08-01_QPHI_amorph.fits",
           B_max_obs,pxsize_obs,
-          "data/Qphi_model_rotated.fits",
+          "../Qphi_model_rotated.fits",
           B_max_mod,pxsize_mod)
 
 
