@@ -186,8 +186,8 @@ def make_plot(observation,model,**kwargs):
     fig.text(0.06,0.5,r'$\Delta \mathrm{Dec.}$ (arcsec)', va='center', ha='center', rotation='vertical',fontsize=lsize)
 
 
-    #fig.savefig("output/Qphi.png")
-    plt.show()
+    fig.savefig("../Qphi.png")
+    #plt.show()
     
     return "File generated!"
 
