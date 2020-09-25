@@ -23,6 +23,28 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from mpl_toolkits.axes_grid1.inset_locator import InsetPosition
 plt.style.use("fancy")
 
+def pivot(data,pxsize):
+
+    ############################################################
+    # Inputs parameters
+    xc=data.shape[1]*0.5
+    yc=data.shape[0]*0.5
+    d=113.43
+    r=((54.64)*units.au).to(units.pc).value # pc
+    r=((r/d)*units.rad).to(units.arcsec).value # arcsec
+    r=r/pxsize #px
+    PA=((158.6+90)*units.deg).to(units.rad).value # w.r.t. x-axis 
+    
+    
+    xp=r*np.cos(PA)
+    yp=r*np.sin(PA)
+
+    x=xp+xc
+    y=yp+yc
+
+    return (x,y,data[int(round(y)),int(round(x))])
+    
+
 def shift(M):
     a=M.min()
     b=M.max()
@@ -34,7 +56,7 @@ def shift(M):
     return M
 
 
-def make_plot(observation,pobs,pxsizeobs,model,pmod,pxsizemod,**kwargs):
+def make_plot(observation,model,**kwargs):
     
     ############################################################
     #
@@ -57,9 +79,36 @@ def make_plot(observation,pobs,pxsizeobs,model,pmod,pxsizemod,**kwargs):
     # Loading data
     hdu_obs=fits.open(observation)
     hdu_mod=fits.open(model)
+    data_obs=hdu_obs[0].data
+    data_mod=hdu_mod[0].data
 
-    data_obs=hdu_obs[0].data/pobs
-    data_mod=hdu_mod[0].data/pmod
+    
+    ############################################################
+    # Derive peak value of model
+    imfile=open("../Image_jband.out").readlines()
+    for line in imfile:
+        if line.split('=')[0]=='MCobs:fov':
+            fov=float(line.split('=')[1].split('!')[0])
+        elif line.split('=')[0]=='MCobs:npix':
+            npix=float(line.split('=')[1].split('!')[0])
+        else:
+            continue
+    pxsizemod=fov/npix # pixel scale model (arcsec/px)
+    xmax_mod=pivot(data_mod,pxsizemod)[0]
+    ymax_mod=pivot(data_mod,pxsizemod)[1]
+    Bmax_mod=pivot(data_mod,pxsizemod)[2]
+
+
+    ############################################################
+    # Constants of the observation
+    Bmax_obs=3.228573595978149
+    pxsizeobs=0.01226 
+
+
+    ############################################################
+    #Normalizing data
+    data_obs=data_obs/Bmax_obs
+    data_mod=data_mod/Bmax_mod
     """
     plt.imshow(data_obs,clim=(-1,1))
     plt.show()
@@ -84,7 +133,7 @@ def make_plot(observation,pobs,pxsizeobs,model,pmod,pxsizemod,**kwargs):
     
     ############################################################
     # General variables for plotting
-    lsize=12 # Label size
+    lsize=14 # Label size
     mapcolor="RdBu"
 
 
@@ -101,16 +150,12 @@ def make_plot(observation,pobs,pxsizeobs,model,pmod,pxsizemod,**kwargs):
     vmax_obs=+1
     vmin_mod=-1
     vmax_mod=+1
-    """
-    vmin_obs=np.percentile(data_obs,a)
-    vmax_obs=np.percentile(data_obs,100-a)
-    vmin_mod=np.percentile(data_obs,a)
-    vmax_mod=np.percentile(data_obs,100-a)
-    """
+
     f_1=ax_1.imshow(data_obs,clim=(vmin_obs,vmax_obs),origin="lower",extent=extent_obs,cmap=mapcolor)
     f_2=ax_2.imshow(data_mod,clim=(vmin_mod,vmax_mod),origin="lower",extent=extent_mod,cmap=mapcolor)
 
 
+    ############################################################
     # Axes limits
     ax_1.set_xlim(lims[0],lims[1])
     ax_1.set_ylim(lims[2],lims[3])
@@ -118,20 +163,24 @@ def make_plot(observation,pobs,pxsizeobs,model,pmod,pxsizemod,**kwargs):
     ax_2.set_ylim(lims[2],lims[3])
     
 
+    ############################################################
     # Axes' ticks parameters
-    ax_1.tick_params(top='on',right='on',labelright="off",labelsize=20) 
-    ax_2.tick_params(top='on',right='on',labelleft="off")
+    ax_1.tick_params(top='on',right='on',labelright="off",labelsize=lsize) 
+    ax_2.tick_params(top='on',right='on',labelleft="off",labelsize=lsize)
     ax_1.locator_params(axis='y',nbins=5)
     ax_2.locator_params(axis='y',nbins=5)
 
-    
+
+    ############################################################
     # Color bar's parameters
     ip=InsetPosition(ax_2,[1,0,0.05,1]) # [(bar's left corner coordinates relative to ax_2),width,height]
     cax.set_axes_locator(ip)
     cbar=fig.colorbar(f_1,cax=cax)
+    cbar.ax.tick_params(labelsize=lsize)
     cbar.set_label(r"Normalized $Q_{\phi}$ signal",fontsize=lsize)
 
-    
+
+    ############################################################
     # Common axes labels
     fig.text(0.5,0.0,r'$\Delta \mathrm{R.A.}$ (arcsec)', va='bottom', ha='center',fontsize=lsize)
     fig.text(0.06,0.5,r'$\Delta \mathrm{Dec.}$ (arcsec)', va='center', ha='center', rotation='vertical',fontsize=lsize)
@@ -143,16 +192,9 @@ def make_plot(observation,pobs,pxsizeobs,model,pmod,pxsizemod,**kwargs):
     return "File generated!"
 
 
-B_max_obs=3.228573595978149
-pxsize_obs=0.01226 
-
-B_max_mod=0.136101396553597
-pxsize_mod=0.004
 
 make_plot("/Users/users/bportilla/Documents/first_project/scripts/PDS70/observations/PDS_70_2017-08-01_QPHI_amorph.fits",
-          B_max_obs,pxsize_obs,
-          "../Qphi_model_rotated.fits",
-          B_max_mod,pxsize_mod)
+          "../Qphi_model_rotated.fits")
 
 
 

@@ -77,50 +77,6 @@ def prepare_Qphi_image(data,PA_disk):
     return data_rot
         
 
-def peak_flux_Qphi_model(Qphi_model_rotated):
-
-    hdu=fits.open(Qphi_model_rotated)
-    data_rot_Qphi=hdu[0].data
-
-    infile=open("../input.dat").readlines()
-    for line in infile:
-        if line.split('=')[0]=='Distance':
-            d=float(line.split('=')[1])
-
-        
-    ############################################################
-    # Loading Image.out info
-    imfile=open("../Image_jband.out").readlines()
-    for line in imfile:
-        if line.split('=')[0]=='MCobs:fov':
-            fov=float(line.split('=')[1].split('!')[0])
-        elif line.split('=')[0]=='MCobs:npix':
-            npix=float(line.split('=')[1].split('!')[0])
-        elif line.split('=')[0]=='MCobs:phi':
-            phi=float(line.split('=')[1].split('!')[0])
-        elif line.split('=')[0]=='MCobs:theta':
-            theta=float(line.split('=')[1].split('!')[0])
-        else:
-            continue
-
-        
-    ############################################################
-    # Derived quantities
-    pxsize=fov/npix # pixel scale (arcsec/px)
-
-
-    ############################################################
-    # Searching for flux at a particular pixel 
-    r_max_obs=54.64 # AU
-    PA_max_obs=158.6 # deg
-    xmax=pivot(data_rot_Qphi,r_max_obs,PA_max_obs,pxsize,d)[0]
-    ymax=pivot(data_rot_Qphi,r_max_obs,PA_max_obs,pxsize,d)[1]
-    Bmax=pivot(data_rot_Qphi,r_max_obs,PA_max_obs,pxsize,d)[2]
-
-    
-    return (xmax,ymax,pxsize,Bmax)
-
-
     
 def prepare_alma_image(data,PA_disk,**kwargs):
 
