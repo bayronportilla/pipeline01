@@ -38,7 +38,20 @@ def ipos(PA_disk,ri,PAi):
 
 #print(ipos(158.6,21.0,146.8))
 #print()
-print(ipos(158.6,38.6,277.0))
+#print(ipos(158.6,38.6,277.0))
+ 
+
+def CPD_dust_mass(m_p,f):
+    # m_p: planet mass (M_jup)
+    # f: fraction of the planet mass (%). f x m_p is the disc's mass (gas) 
+    
+    m_gas=(f/100.0)*m_p
+    m_dust=((0.01*m_gas)*u.M_jup).to(u.M_sun)
+    
+    return m_dust.value
+
     
     
+
+print(CPD_dust_mass(5,10))
     
