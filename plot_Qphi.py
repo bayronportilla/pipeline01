@@ -185,8 +185,10 @@ def make_plot(observation,model,**kwargs):
     fig.text(0.5,0.0,r'$\Delta \mathrm{R.A.}$ (arcsec)', va='bottom', ha='center',fontsize=lsize)
     fig.text(0.06,0.5,r'$\Delta \mathrm{Dec.}$ (arcsec)', va='center', ha='center', rotation='vertical',fontsize=lsize)
 
+    name="Qphi"
+    fig.savefig("../%s.png"%(name))
+    fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/paper_figures/%s.png"%(name))
 
-    fig.savefig("../Qphi.png")
     #plt.show()
     
     return "File generated!"
