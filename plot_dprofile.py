@@ -8,11 +8,10 @@ from matplotlib.ticker import FuncFormatter
 import os
 import sys
 import fnmatch
-
 plt.style.use('fancy')
 
-iprofile=np.loadtxt("surface_density_PDS70_initial.dat")
-fprofile=np.loadtxt("surface_density_PDS70_final.dat")
+iprofile=np.loadtxt("/Users/users/bportilla/Documents/first_project/scripts/PDS70/surface_density/surface_density_PDS70.dat")
+fprofile=np.loadtxt("../surface_density_PDS70.dat")
 
 ix=np.reshape(iprofile[:,0:1],iprofile.shape[0])
 iy=np.reshape(iprofile[:,1:2],iprofile.shape[0])
