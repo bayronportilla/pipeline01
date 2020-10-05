@@ -15,8 +15,8 @@ fprofile=np.loadtxt("../surface_density_PDS70.dat")
 
 ix=np.reshape(iprofile[:,0:1],iprofile.shape[0])
 iy=np.reshape(iprofile[:,1:2],iprofile.shape[0])
-fx=np.reshape(fprofile[:,0:1],iprofile.shape[0])
-fy=np.reshape(fprofile[:,1:2],iprofile.shape[0])
+fx=np.reshape(fprofile[:,0:1],fprofile.shape[0])
+fy=np.reshape(fprofile[:,1:2],fprofile.shape[0])
 
 fsize=14
 fig=plt.figure()
@@ -27,15 +27,19 @@ ax.set_xscale("log")
 ax.set_yscale("log")
 ax.set_xlabel(r"Heliocentric distance (AU)",fontsize=fsize)
 ax.set_ylabel(r"$\Sigma_{\mathrm{dust}}$ (g/cm^2)",fontsize=fsize)
-rotn=-28.0
+rotn=-23.0
 ax.annotate("initial surface density",xy=(0.1,5.7),ha='left',va='top',rotation=rotn,color="grey")
 ax.annotate("modified surface density",xy=(0.05,0.06),ha='left',va='top',rotation=rotn,color="grey")
 ax.axvline(40.0,1e-5,10,linestyle="--",color="lightgrey")
 ax.annotate(r"$R_{\mathrm{tap}}$",xy=(43.0,1.7),ha='left',va='top',color="grey")
 #ax.minorticks_off()
 ax.tick_params(labelsize=14)
+ax.set_xlim(min(fx),max(fx))
+
 
 #plt.show()
-fig.savefig("surface_density.png")
+name="surface_density"
+fig.savefig("../%s.png"%(name))
+fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/paper_figures/%s.png"%(name))
 
 
