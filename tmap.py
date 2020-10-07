@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import math
 from matplotlib import ticker, patches
 import astropy.units as u
+import sys
 
-zones=mread.read_zones("output/")
-
+zones=mread.read_zones("../output/")
 fig=mplot.plot_cuts_zones(zones, "temp")
 plt.show()
