@@ -9,5 +9,5 @@ import astropy.units as u
 import sys
 
 zones=mread.read_zones("../output/")
-fig=mplot.plot_cuts_zones(zones, "temp")
+fig=mplot.plot_midplane_zones_new(zones, "temp",vlim=[1,300])
 plt.show()
