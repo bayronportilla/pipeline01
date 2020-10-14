@@ -25,7 +25,7 @@ profiles_modeled.output_data()
 
 
 print(prepare_images.peak_flux_alma_model("../alma_model_rotated.fits"))
-print(prepare_images.peak_flux_Qphi_model("../Qphi_model_rotated.fits"))
+
 
 
 # azprofile ALMA
