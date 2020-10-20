@@ -145,7 +145,7 @@ def make_plot(observation_alma,maxobs_alma,pxsizeobs_alma,model_alma,maxmod_alma
     ############################################################
     # Plotting
     
-    fig=plt.figure(figsize=(6.15,6.0))
+    fig=plt.figure(figsize=(6.0,6.0))
     #gs = gridspec.GridSpec(2,3,hspace=0.0,wspace=0.0,width_ratios=[1,1,0.1],height_ratios=[1,1])
     gs = gridspec.GridSpec(2,3,hspace=0.0,wspace=0.0,width_ratios=[1.0,1.0,0.05])
     ax_1=plt.subplot(gs[0,0])
@@ -183,8 +183,8 @@ def make_plot(observation_alma,maxobs_alma,pxsizeobs_alma,model_alma,maxmod_alma
     #ax_2.xaxis.set_ticks_position("top")
     #ax_3.xaxis.set_label_position("top")
     #ax_2.xaxis.set_label_position("top")
-    cbar_1.set_label(r"Surface brightness (mJy/beam)",fontsize=9)
-    cbar_2.set_label(r"Normalized $Q_{\phi}$ signal",fontsize=9)
+    cbar_1.set_label(r"Surface brightness (mJy/beam)",fontsize=10)
+    cbar_2.set_label(r"Normalized $Q_{\phi}$ signal",fontsize=10)
 
 
     # Axes limits
@@ -223,7 +223,6 @@ def make_plot(observation_alma,maxobs_alma,pxsizeobs_alma,model_alma,maxmod_alma
     ax_2.locator_params(axis='x',nbins=5)
     
     
-    
     ############################################################
     # Draw beam
     e3=patches.Ellipse((1, -1),beamx,beamy, angle=beam_angle, linewidth=2, fill=True, zorder=2,color="darkgrey")
@@ -231,21 +230,19 @@ def make_plot(observation_alma,maxobs_alma,pxsizeobs_alma,model_alma,maxmod_alma
     ax_1.add_patch(e3)
     ax_2.add_patch(e4)
     
-    
-    
+        
     # Common axes labels
-    fig.text(0.5,0.02,r'$\Delta \mathrm{R.A.}$ (arcsec)', va='bottom', ha='center',fontsize=lsize)
-    fig.text(0.06,0.56,r'$\Delta \mathrm{Dec.}$ (arcsec)', va='center', ha='center', rotation='vertical',fontsize=lsize)
+    fig.text(0.5,0.04,r'$\Delta \mathrm{R.A.}$ (arcsec)', va='bottom', ha='center',fontsize=lsize)
+    fig.text(0.04,0.56,r'$\Delta \mathrm{Dec.}$ (arcsec)', va='center', ha='center', rotation='vertical',fontsize=lsize)
     
     name="Qphi_alma"
     fig.savefig("../%s.png"%(name))
-    fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/paper_figures/%s.png"%(name))
+    fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/paper_figures/%s.png"%(name),bbox_inches = 'tight')
 
     #fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/reports/report:19-06-2020/%s.png"%(mapcolor))
     #fig.savefig("output/residuals.png")
     plt.show()
     
-
     return "File generated!"
 
 max_obs=1#1.702471971511841
