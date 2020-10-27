@@ -4,7 +4,6 @@ from gofish import imagecube
 import sys
 import matplotlib.gridspec as gridspec
 
-
 ############################################################
 # Load data
 cube=imagecube('../alma_model_rotated.fits')

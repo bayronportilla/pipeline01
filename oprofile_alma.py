@@ -109,7 +109,7 @@ r_max=d*r_max
 
 ############################################################
 # Writing files
-f1=open("info_max_alma.dat","w")
+f1=open("info_max_alma_obs.dat","w")
 f2=open("alma_radial_profile_observed.dat","w")
 f1.write("r_max=%.2f (AU)\n"%r_max)
 f1.write("PA_max=%.2f (deg)\n"%PA_max)

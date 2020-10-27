@@ -129,7 +129,7 @@ def get_profile(file,pxsize,PA_disk,inc,d):
 
     ############################################################
     # Writing files
-    f1=open("info_max_Qphi.dat","w")
+    f1=open("info_max_Qphi_obs.dat","w")
     f2=open("radial_cut_0FWHM.dat","w")
     f1.write("r_max=%.2f (AU)\n"%r_au[imax])
     f1.write("PA_max=%.2f (deg)\n"%PA_disk)

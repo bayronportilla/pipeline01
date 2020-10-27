@@ -164,17 +164,18 @@ def azimuthal_profile(image,pxsize,amean,width,inc,PA,d,Nbins):
             PA_bin=360.0+PA_bin
         x.append(PA_bin)
         y.append(value.getFlux()/len(value.plist))
-    
+        
+    """
     f=open("../azprofile_alma_mod.dat","w")
     for i in range(0,len(x)):
         f.write("%.5f %.15f\n"%(x[i],y[i]))
     f.close()
-    
     """
+    
     plt.plot(x,y,".")
     plt.show()
-    """
-    
+        
     return 0
+
 
 
