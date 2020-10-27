@@ -25,7 +25,6 @@ psizes=[]
 
 ############################################################
 # Working dir
-directory=("/data/users/bportilla/runs/final_runs/%s/"%(run_name))
 folder='../Particles'
 path_to_input="../input.dat"
 infile=open(path_to_input).readlines()
