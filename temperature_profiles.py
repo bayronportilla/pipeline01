@@ -17,7 +17,7 @@ def hstack_matrix(zones,fieldname,vlim=[None,None]):
   P=np.zeros((zones[0].np,len(zones)*zones[0].nr))
   for zone in zones:
     field=getattr(zone, fieldname)    
-    fieldlog=plog(field)
+    fieldlog=mplot.plog(field)
     vmin=vlim[0]
     vmax=vlim[1]
     
@@ -41,7 +41,7 @@ def hstack_matrix(zones,fieldname,vlim=[None,None]):
     R[:,k*60:(k+1)*60]=rr
     P[:,k*60:(k+1)*60]=pp
     k+=1
-    print(T.shape,R.shape,P.shape
+    print(T.shape,R.shape,P.shape)
 
   plt.imshow(T,vmin=0.1,vmax=4)
   plt.xlabel("Radial grid point")
@@ -68,7 +68,7 @@ def T_radial(T,R,P,phi,**kwargs):
 
     ############################################################
     # Find i index closest to the input phi value
-    phi=(phi*units.deg).to(units.rad).value
+    phi=(phi*u.deg).to(u.rad).value
     phi_values=np.reshape(P[:,0:1],P.shape[0])
     islit=(np.abs(phi_values-phi)).argmin()
 
