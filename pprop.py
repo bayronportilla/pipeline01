@@ -42,7 +42,7 @@ for i in range(1,Nzones+1):
 for i in range(0,Nzones):
     psizes.append((psizes_min[i],psizes_max[i]))
 
-sys.exit()
+
 ############################################################
 # Creating lists for both cases
 fvC=str(fvC)
@@ -66,7 +66,7 @@ class Archivo:
         return self.filename[13:17]
 
     def f(self):
-        hdulist=fits.open("/data/users/bportilla/runs/final_runs/%s/Particles/%s"%(run_name,self.filename))
+        hdulist=fits.open("../Particles/%s"%(self.filename))
         hdu=hdulist[0]
         hdr=hdu.header
         amin_bin=hdr["R_MIN"]
@@ -82,13 +82,13 @@ class Archivo:
         return value
         
     def getEntry(self,i,j):
-        hdulist=fits.open("/data/users/bportilla/runs/final_runs/%s/Particles/%s"%(run_name,self.filename))
+        hdulist=fits.open("../Particles/%s"%(self.filename))
         data=np.transpose(hdulist[0].data)
         value=data[i][j]
         return value
     
     def getWavelength(self):
-        hdulist=fits.open("/data/users/bportilla/runs/final_runs/%s/Particles/%s"%(run_name,self.filename))
+        hdulist=fits.open("../Particles/%s"%(self.filename))
         data=np.transpose(hdulist[0].data)
         value=np.reshape(data[:,0:1],data.shape[0])
         return value
@@ -160,9 +160,9 @@ print(np.transpose(hdu_ext))
 hdu_ext=fits.PrimaryHDU(np.transpose(hdu_ext))
 hdu_abso=fits.PrimaryHDU(np.transpose(hdu_abso))
 hdu_sca=fits.PrimaryHDU(np.transpose(hdu_sca))
-hdu_ext.writeto('ext.fits')
-hdu_abso.writeto('abs.fits')
-hdu_sca.writeto('sca.fits')
+hdu_ext.writeto('../ext.fits')
+hdu_abso.writeto('../abs.fits')
+hdu_sca.writeto('../sca.fits')
 
 
 
