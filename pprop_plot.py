@@ -37,5 +37,8 @@ for i in range(0,Nzones):
     if i==0:
         ax.set_ylabel(r"Dust oppacities (cm$^2$/g(dust))")
 plt.show()
-#fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/report:08-05-2020/nuevo.png")
+name="opacities"
+#fig.savefig("../%s.png"%(name))
+fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/paper_figures/%s.png"%(name))
+
     
