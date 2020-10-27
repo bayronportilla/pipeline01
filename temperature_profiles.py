@@ -74,7 +74,7 @@ def T_radial(T,R,P,xp,yp,**kwargs):
     islit=(np.abs(phi_values-phi)).argmin()
     """
     islit=round(np.arctan(yp/xp)/(2*np.pi/zones[0].np))-1
-    
+    print(islit,type(islit))
 
     R_cut=np.reshape(R[islit:islit+1,:],R.shape[1])
     T_cut=np.reshape(T[islit:islit+1,:],T.shape[1])        
