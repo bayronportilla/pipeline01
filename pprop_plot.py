@@ -7,9 +7,9 @@ import sys
 import fnmatch
 plt.style.use('fancy')
 
-hdulist_ext=fits.open('ext.fits') # row: wl, col: z1,z2,z3
-hdulist_abso=fits.open('abs.fits')
-hdulist_sca=fits.open('sca.fits')
+hdulist_ext=fits.open('../ext.fits') # row: wl, col: z1,z2,z3
+hdulist_abso=fits.open('../abs.fits')
+hdulist_sca=fits.open('../sca.fits')
 
 ext=hdulist_ext[0].data
 abso=hdulist_abso[0].data
@@ -37,5 +37,5 @@ for i in range(0,Nzones):
     if i==0:
         ax.set_ylabel(r"Dust oppacities (cm$^2$/g(dust))")
 plt.show()
-fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/report:08-05-2020/nuevo.png")
+#fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/report:08-05-2020/nuevo.png")
     

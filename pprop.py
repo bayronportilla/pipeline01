@@ -160,9 +160,9 @@ print(np.transpose(hdu_ext))
 hdu_ext=fits.PrimaryHDU(np.transpose(hdu_ext))
 hdu_abso=fits.PrimaryHDU(np.transpose(hdu_abso))
 hdu_sca=fits.PrimaryHDU(np.transpose(hdu_sca))
-hdu_ext.writeto('../ext.fits')
-hdu_abso.writeto('../abs.fits')
-hdu_sca.writeto('../sca.fits')
+hdu_ext.writeto('../ext.fits',overwrite=True)
+hdu_abso.writeto('../abs.fits',overwrite=True)
+hdu_sca.writeto('../sca.fits',overwrite=True)
 
 
 
