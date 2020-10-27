@@ -135,3 +135,8 @@ T_ave,R_ave=T_radial(T,R,P,0,smooth=True)
 plt.plot(R_ave,T_ave,".")
 plt.xscale("log")
 plt.show()
+
+f=open("../tprofile.dat","w")
+for i,j in zip(R_ave,T_ave):
+  f.write("%.15e %.15e\n"%(i,j))
+f.close()
