@@ -68,9 +68,13 @@ def T_radial(T,R,P,phi,**kwargs):
 
     ############################################################
     # Find i index closest to the input phi value
+    """
     phi=(phi*u.deg).to(u.rad).value
     phi_values=np.reshape(P[:,0:1],P.shape[0])
     islit=(np.abs(phi_values-phi)).argmin()
+    """
+    islit=round(np.arctan(yp/xp)/(2*np.pi/zone[0].np))-1
+    
 
     R_cut=np.reshape(R[islit:islit+1,:],R.shape[1])
     T_cut=np.reshape(T[islit:islit+1,:],T.shape[1])        
@@ -130,7 +134,8 @@ def T_radial(T,R,P,phi,**kwargs):
         return T_smooth,R_smooth
 
 T,R,P=hstack_matrix(zones,"temp",vlim=[1,2000])
-T_ave,R_ave=T_radial(T,R,P,0,smooth=True)
+
+T_ave,R_ave=T_radial(T,R,P,33.954434912651394,18.35909447011263,smooth=True)
 
 plt.plot(R_ave,T_ave,".")
 plt.xscale("log")
