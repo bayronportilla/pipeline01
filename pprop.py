@@ -10,9 +10,8 @@ import fnmatch
 ############################################################
 # Inputs
 Nzones=3
-run_name="run_166"
-fvSI=0.73
-fvC=0.27
+fvSI=0.72
+fvC=0.28
 
 
 ############################################################
@@ -27,8 +26,8 @@ psizes=[]
 ############################################################
 # Working dir
 directory=("/data/users/bportilla/runs/final_runs/%s/"%(run_name))
-folder=directory+'Particles'
-path_to_input=directory+"input.dat"
+folder='../Particles'
+path_to_input="../input.dat"
 infile=open(path_to_input).readlines()
 for i in range(1,Nzones+1):
     for line in infile:
@@ -44,7 +43,7 @@ for i in range(1,Nzones+1):
 for i in range(0,Nzones):
     psizes.append((psizes_min[i],psizes_max[i]))
 
-
+sys.exit()
 ############################################################
 # Creating lists for both cases
 fvC=str(fvC)
