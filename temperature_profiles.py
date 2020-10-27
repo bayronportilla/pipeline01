@@ -50,7 +50,7 @@ def hstack_matrix(zones,fieldname,vlim=[None,None]):
   return T,R,P
 
 
-def T_radial(T,R,P,phi,**kwargs):
+def T_radial(T,R,P,xp,yp,**kwargs):
 
     class Midgridp:
         def __init__(self,i,j):
