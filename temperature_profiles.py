@@ -8,11 +8,13 @@ from matplotlib import ticker, patches
 import astropy.units as u
 import sys
 
+zones=mread.read_zones("../output/")
+
 def hstack_matrix(zones,fieldname,vlim=[None,None]):
   k=0
-  T=np.zeros((60,180))
-  R=np.zeros((60,180))
-  P=np.zeros((60,180))
+  T=np.zeros((zones[0].np,len(zones)*zones[0].nr))
+  R=np.zeros((zones[0].np,len(zones)*zones[0].nr))
+  P=np.zeros((zones[0].np,len(zones)*zones[0].nr))
   for zone in zones:
     field=getattr(zone, fieldname)    
     fieldlog=plog(field)
@@ -39,13 +41,8 @@ def hstack_matrix(zones,fieldname,vlim=[None,None]):
     R[:,k*60:(k+1)*60]=rr
     P[:,k*60:(k+1)*60]=pp
     k+=1
-    #print("aaaaaaa=",val.size)
-    
-    #plt.imshow(val)
-    #plt.show()  
-  #print("R",R)
-  #print("P",P)
-  #plt.contourf(R,P,T,vmin=0.1,vmax=4)
+    print(T.shape,R.shape,P.shape
+
   plt.imshow(T,vmin=0.1,vmax=4)
   plt.xlabel("Radial grid point")
   plt.ylabel("Azimuthal direction")  
@@ -131,3 +128,10 @@ def T_radial(T,R,P,phi,**kwargs):
          #   print("%.4f %.4f"%(R_smooth[j],T_smooth[j]))
 
         return T_smooth,R_smooth
+
+T,R,P=hstack_matrix(zones,"temp",vlim=[1,2000])
+T_ave,R_ave=T_radial(T,R,P,0,smooth=True)
+
+plt.plot(R_ave,T_ave,".")
+plt.xscale("log")
+plt.show()
