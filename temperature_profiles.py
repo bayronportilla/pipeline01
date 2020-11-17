@@ -10,6 +10,112 @@ import sys
 
 zones=mread.read_zones("../output/")
 
+
+def zone_matrix(zone,xp,yp,Rin,Rout,**kwargs):
+
+  # Print zone information
+  print("Radial points: %d"%(zone.nr))
+  print("theta points: %d"%(zone.nt))
+  print("phi points: %d"%(zone.np))
+
+  # Get temperature field
+  field=getattr(zone,"temp")
+  fieldlog=mplot.plog(field)
+
+  # Midplane coordinates
+  x=zone.x[:,int(zone.nt/2),:]
+  y=zone.y[:,int(zone.nt/2),:]
+  x=np.append(x,[x[0,:]],axis=0)
+  y=np.append(y,[y[0,:]],axis=0)
+  rr=zone.r[:,int(zone.nt/2),:]
+  pp=zone.phi[:,int(zone.nt/2),:]
+
+  # Midplane temperature (averaged)
+  val=(fieldlog[:,int(zone.nt/2),:]+fieldlog[:,int(zone.nt/2+1),:])/2.0
+
+  # Return triplet (they all have the same dimension)
+  T=val
+  R=rr
+  P=pp
+  """
+  class Midgridp:
+    def __init__(self,i,j):
+      self.i=i
+      self.j=j
+    def getR(self):
+      return R[i][j]
+    def getPhi(self):
+      return P[i][j]
+    def getT(self):
+      return T[i][j]
+  """
+
+  # Find i index closest to the input phi value
+  islit=int(round(np.arctan(yp/xp)/(2*np.pi/zone.np)))-1
+
+  # Temperature along islit
+  R_islit=np.reshape(R[islit:islit+1,:],R.shape[1])
+  T_islit=np.reshape(T[islit:islit+1,:],T.shape[1])
+  
+  
+  plt.imshow(T)
+  plt.show()
+  """
+  print(islit)  
+  plt.plot(R_islit,T_islit,'.')
+  plt.show()
+  """
+  
+  if kwargs['smooth']==True:
+    delta=1
+    T_smooth=0
+    N=0
+    iarray=[]
+    for i in range(0,len(R[0])):
+      if R[0][i]<=Rin+delta:
+        """
+        T_smooth+=(np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0])
+        N+=1
+        """
+        iarray.append(i)
+    R_islit=[]
+    T_islit=[]
+    for i in range(0,len(R[0])):
+      if i not in iarray:
+        R_islit.append(i)
+        T_islit.append(T[islit:islit+1,i:i+1])
+        
+    print(T_islit)
+    sys.exit()
+    plt.plot(R_islit,T_islit)
+    plt.show()
+
+    
+    sys.exit()
+    print(T[:,iarray[0]:iarray[-1]])
+    print(T[:,iarray[0]:iarray[-1]].min(),T[:,iarray[0]:iarray[-1]].max())
+    sys.exit()
+    """
+    print(T)
+    T_smooth=T_smooth/N
+    r_smooth=0.5*(R[0][N-1]-R[0][0])+R[0][0]
+    """
+    
+    # Print information about smoothening
+    print("Interval covered (AU): ",R[0,0:N])
+    print("Number of collapsed columns: %d"%N)
+    print("Smoothened temperature (K): %.1f"%10**T_smooth)
+    #print(r_smooth)
+    
+    
+    
+  return T,R,P
+
+zone_matrix(zones[1],33.954434912651394,18.35909447011263,20,41,
+            smooth=True)
+sys.exit()
+
+
 def hstack_matrix(zones,fieldname,vlim=[None,None]):
   k=0
   T=np.zeros((zones[0].np,len(zones)*zones[0].nr))
