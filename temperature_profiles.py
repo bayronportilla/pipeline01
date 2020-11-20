@@ -10,9 +10,42 @@ import sys
 
 zones=mread.read_zones("../output/")
 
+def zone_matrix(zone,Rin,Rout,**kwargs):
+  
+  # Reading information from 'input' file
+  path_input_file='../input.dat'
+  infile=open(path_input_file).readlines()
+  for line in infile:
+    if line.split('=')[0]=='star02:x':
+      xp=float(line.split('=')[1])
+    elif line.split('=')[0]=='star02:y':
+      yp=float(line.split('=')[1])
+    elif line.split('=')[0]=='zone4:Rin':
+      Rin=float(line.split('=')[1])
+    elif line.split('=')[0]=='zone4:Rout':
+      Rout=float(line.split('=')[1])
+  
+  # Distance to planet from star
+  D=(xp**2+yp**2)**0.5
 
-def zone_matrix(zone,xp,yp,Rin,Rout,**kwargs):
+  # Distance to CPD's Rout from star
+  d=(D**2+Rout**2)**0.5
+  
+  # theta,theta prime, theta_1 and theta_2
+  theta=np.arctan(yp/xp)
+  thetap=np.arcsin(Rout/d)
+  theta_1=theta-thetap
+  theta_2=theta+thetap
 
+  # Find i index closest to the input phi value
+
+  islit=int(round(theta/(2*np.pi/zone.np)))-1
+  islit_1=int(round(theta_1/(2*np.pi/zone.np)))-1
+  islit_2=int(round(theta_2/(2*np.pi/zone.np)))-1
+  Nislit=islit_2-islit_1+1
+
+  print(Nislit)
+  sys.exit()
   # Print zone information
   print("Radial points: %d"%(zone.nr))
   print("theta points: %d"%(zone.nt))
@@ -37,18 +70,6 @@ def zone_matrix(zone,xp,yp,Rin,Rout,**kwargs):
   T=val
   R=rr
   P=pp
-  """
-  class Midgridp:
-    def __init__(self,i,j):
-      self.i=i
-      self.j=j
-    def getR(self):
-      return R[i][j]
-    def getPhi(self):
-      return P[i][j]
-    def getT(self):
-      return T[i][j]
-  """
 
   # Find i index closest to the input phi value
   islit=int(round(np.arctan(yp/xp)/(2*np.pi/zone.np)))-1
@@ -56,17 +77,34 @@ def zone_matrix(zone,xp,yp,Rin,Rout,**kwargs):
   # Temperature along islit
   R_islit=np.reshape(R[islit:islit+1,:],R.shape[1])
   T_islit=np.reshape(T[islit:islit+1,:],T.shape[1])
-  
-  
+    
   plt.imshow(T)
   plt.show()
-  """
-  print(islit)  
+
   plt.plot(R_islit,T_islit,'.')
   plt.show()
-  """
-  
+  sys.exit()
+
   if kwargs['smooth']==True:
+    std_array=[]
+    for i in range(0,T.shape[1]):
+      col=np.reshape(T[:,i:i+1],T.shape[0])
+      std_array.append(np.std(col))
+    plt.plot(std_array,'.')
+    plt.show()
+    std_cut=float(input("Enter the limit in the Std: "))
+    T_ave=0
+    R_ave=[]
+    k=0
+    for i in range(0,T.shape[1]):
+      if std_array[i]>=std_cut: 
+        T_ave+=np.sum(np.reshape(T[:,i:i+1],T.shape[0]))
+        R_ave.append(R[0][i])
+        k+=1
+    T_ave=T_ave/k
+    R_mid=(R_ave[-1]-R_ave[0])*0.5+R_ave[0]
+    sys.exit()
+    
     delta=1
     T_smooth=0
     N=0
@@ -86,7 +124,7 @@ def zone_matrix(zone,xp,yp,Rin,Rout,**kwargs):
         T_islit.append(T[islit:islit+1,i:i+1])
         
     print(T_islit)
-    sys.exit()
+    
     plt.plot(R_islit,T_islit)
     plt.show()
 
@@ -111,8 +149,8 @@ def zone_matrix(zone,xp,yp,Rin,Rout,**kwargs):
     
   return T,R,P
 
-zone_matrix(zones[1],33.954434912651394,18.35909447011263,20,41,
-            smooth=True)
+#zone_matrix(zones[3],33.954434912651394,18.35909447011263,0.007,1.502,smooth=True)
+zone_matrix(zones[1],20,41.0,smooth=True)
 sys.exit()
 
 
