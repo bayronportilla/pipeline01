@@ -43,17 +43,11 @@ def zone_matrix(zone,Rin,Rout,**kwargs):
   islit_2=int(round(theta_2/(2*np.pi/zone.np)))-1
   Nislit=islit_2-islit_1+1
 
-  print(Nislit)
-  #sys.exit()
-  """
-  # Print zone information
-  print("Radial points: %d"%(zone.nr))
-  print("theta points: %d"%(zone.nt))
-  print("phi points: %d"%(zone.np))
 
   # Get temperature field
   field=getattr(zone,"temp")
   fieldlog=mplot.plog(field)
+
 
   # Midplane coordinates
   x=zone.x[:,int(zone.nt/2),:]
@@ -63,16 +57,16 @@ def zone_matrix(zone,Rin,Rout,**kwargs):
   rr=zone.r[:,int(zone.nt/2),:]
   pp=zone.phi[:,int(zone.nt/2),:]
 
+
   # Midplane temperature (averaged)
   val=(fieldlog[:,int(zone.nt/2),:]+fieldlog[:,int(zone.nt/2+1),:])/2.0
+
 
   # Return triplet (they all have the same dimension)
   T=val
   R=rr
   P=pp
 
-  # Find i index closest to the input phi value
-  islit=int(round(np.arctan(yp/xp)/(2*np.pi/zone.np)))-1
 
   # Temperature along islit
   R_islit=np.reshape(R[islit:islit+1,:],R.shape[1])
@@ -84,7 +78,7 @@ def zone_matrix(zone,Rin,Rout,**kwargs):
   plt.plot(R_islit,T_islit,'.')
   plt.show()
   sys.exit()
-
+  """
   if kwargs['smooth']==True:
     std_array=[]
     for i in range(0,T.shape[1]):
@@ -150,9 +144,9 @@ def zone_matrix(zone,Rin,Rout,**kwargs):
 
 #zone_matrix(zones[3],33.954434912651394,18.35909447011263,0.007,1.502,smooth=True)
 
-zone_matrix(zones[0],0.05,20.0,smooth=True)
+#zone_matrix(zones[0],0.05,20.0,smooth=True)
 zone_matrix(zones[1],20,41.0,smooth=True)
-zone_matrix(zones[2],41,120.0,smooth=True)
+#zone_matrix(zones[2],41,120.0,smooth=True)
 sys.exit()
 
 
