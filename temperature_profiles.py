@@ -38,14 +38,14 @@ def zone_matrix(zone,Rin,Rout,**kwargs):
   theta_2=theta+thetap
 
   # Find i index closest to the input phi value
-
   islit=int(round(theta/(2*np.pi/zone.np)))-1
   islit_1=int(round(theta_1/(2*np.pi/zone.np)))-1
   islit_2=int(round(theta_2/(2*np.pi/zone.np)))-1
   Nislit=islit_2-islit_1+1
 
   print(Nislit)
-  sys.exit()
+  #sys.exit()
+  """
   # Print zone information
   print("Radial points: %d"%(zone.nr))
   print("theta points: %d"%(zone.nt))
@@ -111,10 +111,10 @@ def zone_matrix(zone,Rin,Rout,**kwargs):
     iarray=[]
     for i in range(0,len(R[0])):
       if R[0][i]<=Rin+delta:
-        """
+        
         T_smooth+=(np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0])
         N+=1
-        """
+       
         iarray.append(i)
     R_islit=[]
     T_islit=[]
@@ -133,24 +133,26 @@ def zone_matrix(zone,Rin,Rout,**kwargs):
     print(T[:,iarray[0]:iarray[-1]])
     print(T[:,iarray[0]:iarray[-1]].min(),T[:,iarray[0]:iarray[-1]].max())
     sys.exit()
-    """
+    
     print(T)
     T_smooth=T_smooth/N
     r_smooth=0.5*(R[0][N-1]-R[0][0])+R[0][0]
-    """
+    
     
     # Print information about smoothening
     print("Interval covered (AU): ",R[0,0:N])
     print("Number of collapsed columns: %d"%N)
     print("Smoothened temperature (K): %.1f"%10**T_smooth)
     #print(r_smooth)
-    
-    
-    
-  return T,R,P
+  """
+  #return T,R,P
+  return None
 
 #zone_matrix(zones[3],33.954434912651394,18.35909447011263,0.007,1.502,smooth=True)
+
+zone_matrix(zones[0],0.05,20.0,smooth=True)
 zone_matrix(zones[1],20,41.0,smooth=True)
+zone_matrix(zones[2],41,120.0,smooth=True)
 sys.exit()
 
 
