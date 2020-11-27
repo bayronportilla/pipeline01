@@ -10,8 +10,10 @@ import sys
 
 zones=mread.read_zones("../output/")
 
-def zone_matrix(zone,Rin,Rout,**kwargs):
+def zone_matrix(zoneID,**kwargs):
   
+  zone=zones[zoneID-1]
+
   # Reading information from 'input' file
   path_input_file='../input.dat'
   infile=open(path_input_file).readlines()
@@ -67,86 +69,89 @@ def zone_matrix(zone,Rin,Rout,**kwargs):
   R=rr
   P=pp
 
+  # Find temperature submatrix
+  T_sub=T[islit_1:islit_2+1,:]
 
-  # Temperature along islit
-  R_islit=np.reshape(R[islit:islit+1,:],R.shape[1])
-  T_islit=np.reshape(T[islit:islit+1,:],T.shape[1])
-    
   plt.imshow(T)
   plt.show()
 
-  plt.plot(R_islit,T_islit,'.')
+  
+  std_array=[]
+  for i in range(0,T.shape[1]):
+    col=np.reshape(T[:,i:i+1],T.shape[0])
+    std_array.append(np.std(col))
+  plt.plot(std_array,'.')
   plt.show()
-  sys.exit()
-  """
-  if kwargs['smooth']==True:
-    std_array=[]
-    for i in range(0,T.shape[1]):
-      col=np.reshape(T[:,i:i+1],T.shape[0])
-      std_array.append(np.std(col))
-    plt.plot(std_array,'.')
-    plt.show()
+
+  if zoneID!=4:
     std_cut=float(input("Enter the limit in the Std: "))
-    T_ave=0
-    R_ave=[]
+    T_noisy=0
+    j_noisy=[]
+    T_clean=[]
+    R_clean=[]
     k=0
-    for i in range(0,T.shape[1]):
-      if std_array[i]>=std_cut: 
-        T_ave+=np.sum(np.reshape(T[:,i:i+1],T.shape[0]))
-        R_ave.append(R[0][i])
-        k+=1
-    T_ave=T_ave/k
-    R_mid=(R_ave[-1]-R_ave[0])*0.5+R_ave[0]
-    sys.exit()
-    
-    delta=1
-    T_smooth=0
-    N=0
-    iarray=[]
-    for i in range(0,len(R[0])):
-      if R[0][i]<=Rin+delta:
-        
-        T_smooth+=(np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0])
-        N+=1
-       
-        iarray.append(i)
-    R_islit=[]
-    T_islit=[]
-    for i in range(0,len(R[0])):
-      if i not in iarray:
-        R_islit.append(i)
-        T_islit.append(T[islit:islit+1,i:i+1])
-        
-    print(T_islit)
-    
-    plt.plot(R_islit,T_islit)
+    if std_cut<1:
+      for i in range(0,T.shape[1]):
+        if std_array[i]>=std_cut: 
+          T_noisy+=np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0]
+          j_noisy.append(i)
+        else:
+          T_clean.append(np.sum(np.reshape(T_sub[:,i:i+1],T_sub.shape[0]))/T_sub.shape[0])
+          R_clean.append(R[0][i])
+
+      T_noisy=T_noisy/len(j_noisy)
+      R_noisy=(R[0][j_noisy[-1]]-R[0][j_noisy[0]])*0.5+R[0][j_noisy[0]]
+  
+      T_clean.append(T_noisy)
+      R_clean.append(R_noisy)
+
+    elif std_cut==1:
+      for i in range(0,T.shape[1]):
+        T_clean.append(np.sum(np.reshape(T_sub[:,i:i+1],T_sub.shape[0]))/T_sub.shape[0])
+        R_clean.append(R[0][i])
+      
+
+    T_tot=np.array(T_clean)
+    R_tot=np.array(R_clean)
+
+    plt.plot(R_clean,T_clean,'.')
     plt.show()
 
-    
-    sys.exit()
-    print(T[:,iarray[0]:iarray[-1]])
-    print(T[:,iarray[0]:iarray[-1]].min(),T[:,iarray[0]:iarray[-1]].max())
-    sys.exit()
-    
-    print(T)
-    T_smooth=T_smooth/N
-    r_smooth=0.5*(R[0][N-1]-R[0][0])+R[0][0]
-    
-    
-    # Print information about smoothening
-    print("Interval covered (AU): ",R[0,0:N])
-    print("Number of collapsed columns: %d"%N)
-    print("Smoothened temperature (K): %.1f"%10**T_smooth)
-    #print(r_smooth)
-  """
-  #return T,R,P
+    return R_clean,T_clean
+
+  else:
+    T_cpd=[]
+    R_cpd=[]
+    R_cpd_sym=[]
+    for i in range(0,T.shape[1]):
+      T_cpd.append(np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0])
+      R_cpd.append(R[0][i]+D)
+      
+    return R_cpd,T_cpd
+
   return None
 
 #zone_matrix(zones[3],33.954434912651394,18.35909447011263,0.007,1.502,smooth=True)
+print(zone_matrix(2))
 
-#zone_matrix(zones[0],0.05,20.0,smooth=True)
-zone_matrix(zones[1],20,41.0,smooth=True)
-#zone_matrix(zones[2],41,120.0,smooth=True)
+sys.exit()
+R_def=[]
+T_def=[]
+for i in range(1,5):
+  R=zone_matrix(i)[0]
+  T=zone_matrix(i)[1]
+  for j in range(0,len(R)):
+    R_def.append(R[j])
+    T_def.append(T[j])
+  
+
+f=open("temp.dat","w")
+for i in range(0,len(T_def)):
+  f.write("%.15f %.15f\n"%(R_def[i],T_def[i]))
+f.close()
+
+  
+
 sys.exit()
 
 
@@ -275,13 +280,13 @@ def T_radial(T,R,P,xp,yp,**kwargs):
 
 T,R,P=hstack_matrix(zones,"temp",vlim=[1,2000])
 
-T_ave,R_ave=T_radial(T,R,P,33.954434912651394,18.35909447011263,smooth=True)
+T_noisy,R_ave=T_radial(T,R,P,33.954434912651394,18.35909447011263,smooth=True)
 
-plt.plot(R_ave,T_ave,".")
+plt.plot(R_ave,T_noisy,".")
 plt.xscale("log")
 plt.show()
 
 f=open("../tprofile.dat","w")
-for i,j in zip(R_ave,T_ave):
+for i,j in zip(R_ave,T_noisy):
   f.write("%.15e %.15e\n"%(i,j))
 f.close()
