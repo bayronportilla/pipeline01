@@ -7,6 +7,8 @@ import math
 from matplotlib import ticker, patches
 import astropy.units as u
 import sys
+from astropy.stats import median_absolute_deviation
+
 
 zones=mread.read_zones("../output/")
 
@@ -27,17 +29,21 @@ def zone_matrix(zoneID,**kwargs):
     elif line.split('=')[0]=='zone4:Rout':
       Rout=float(line.split('=')[1])
   
+
   # Distance to planet from star
   D=(xp**2+yp**2)**0.5
+
 
   # Distance to CPD's Rout from star
   d=(D**2+Rout**2)**0.5
   
+
   # theta,theta prime, theta_1 and theta_2
   theta=np.arctan(yp/xp)
   thetap=np.arcsin(Rout/d)
   theta_1=theta-thetap
   theta_2=theta+thetap
+
 
   # Find i index closest to the input phi value
   islit=int(round(theta/(2*np.pi/zone.np)))-1
@@ -69,10 +75,15 @@ def zone_matrix(zoneID,**kwargs):
   R=rr
   P=pp
 
-  # Find temperature submatrix
+
+  # Find temperature submatrix of azimuthal directions
   T_sub=T[islit_1:islit_2+1,:]
 
+
   plt.imshow(T)
+  plt.show()
+
+  plt.imshow(T_sub)
   plt.show()
 
   
@@ -80,8 +91,17 @@ def zone_matrix(zoneID,**kwargs):
   for i in range(0,T.shape[1]):
     col=np.reshape(T[:,i:i+1],T.shape[0])
     std_array.append(np.std(col))
+
+  np.savetxt("median/std_array_3.dat",std_array)
   plt.plot(std_array,'.')
   plt.show()
+  
+  print(median_absolute_deviation(std_array))
+  print(np.median(std_array))
+  sys.exit()
+  plt.hist(std_array)
+  plt.show()
+  sys.exit()
 
   if zoneID!=4:
     std_cut=float(input("Enter the limit in the Std: "))
@@ -92,7 +112,7 @@ def zone_matrix(zoneID,**kwargs):
     k=0
     if std_cut<1:
       for i in range(0,T.shape[1]):
-        if std_array[i]>=std_cut: 
+        if std_array[i]>=std_cut and i<50: 
           T_noisy+=np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0]
           j_noisy.append(i)
         else:
@@ -114,6 +134,7 @@ def zone_matrix(zoneID,**kwargs):
     T_tot=np.array(T_clean)
     R_tot=np.array(R_clean)
 
+    plt.plot(R_noisy,T_noisy,'+')
     plt.plot(R_clean,T_clean,'.')
     plt.show()
 
@@ -132,7 +153,7 @@ def zone_matrix(zoneID,**kwargs):
   return None
 
 #zone_matrix(zones[3],33.954434912651394,18.35909447011263,0.007,1.502,smooth=True)
-print(zone_matrix(2))
+print(zone_matrix(3))
 
 sys.exit()
 R_def=[]
