@@ -28,6 +28,15 @@ def zone_matrix(zoneID,**kwargs):
       Rin=float(line.split('=')[1])
     elif line.split('=')[0]=='zone4:Rout':
       Rout=float(line.split('=')[1])
+    elif line.split('=')[0]=='zone1:Rin':
+      Rin_1=float(line.split('=')[1])  
+    elif line.split('=')[0]=='zone2:Rin':
+      Rin_2=float(line.split('=')[1])
+    elif line.split('=')[0]=='zone3:Rin':
+      Rin_3=float(line.split('=')[1])
+
+
+  Rins=[Rin_1,Rin_2,Rin_3]
   
 
   # Distance to planet from star
@@ -78,65 +87,69 @@ def zone_matrix(zoneID,**kwargs):
 
   # Find temperature submatrix of azimuthal directions
   T_sub=T[islit_1:islit_2+1,:]
+  T_sub=T
 
-
+  """
   plt.imshow(T)
   plt.show()
 
   plt.imshow(T_sub)
   plt.show()
+  """
 
-  
+  # Compute standard deviation array  
   std_array=[]
   for i in range(0,T.shape[1]):
     col=np.reshape(T[:,i:i+1],T.shape[0])
     std_array.append(np.std(col))
 
-  np.savetxt("median/std_array_3.dat",std_array)
-  plt.plot(std_array,'.')
-  plt.show()
-  
-  print(median_absolute_deviation(std_array))
-  print(np.median(std_array))
-  sys.exit()
-  plt.hist(std_array)
-  plt.show()
-  sys.exit()
 
+  # Find the median and the MAD of std_array
+  median=np.median(std_array)
+  mad=median_absolute_deviation(std_array)
+  
+    
   if zoneID!=4:
-    std_cut=float(input("Enter the limit in the Std: "))
+
+
+    # Initialize relevant variables
     T_noisy=0
     j_noisy=[]
     T_clean=[]
     R_clean=[]
     k=0
-    if std_cut<1:
-      for i in range(0,T.shape[1]):
-        if std_array[i]>=std_cut and i<50: 
-          T_noisy+=np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0]
-          j_noisy.append(i)
-        else:
-          T_clean.append(np.sum(np.reshape(T_sub[:,i:i+1],T_sub.shape[0]))/T_sub.shape[0])
-          R_clean.append(R[0][i])
 
+    
+    # Find imax
+    rmax=Rins[zoneID-1]+1.0
+    for i in range(0,T.shape[1]):
+      if rmax>=R[0][i]:
+        imax=i
+    
+
+    for i in range(0,T.shape[1]):
+      selector=abs(std_array[i]-median)/mad
+      if selector>=3.0 and i<=imax:
+        T_noisy+=np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0]
+        j_noisy.append(i)
+      elif selector<3.0:
+        T_clean.append(np.sum(np.reshape(T_sub[:,i:i+1],T_sub.shape[0]))/T_sub.shape[0])
+        R_clean.append(R[0][i])
+
+    if len(j_noisy)!=0:
       T_noisy=T_noisy/len(j_noisy)
       R_noisy=(R[0][j_noisy[-1]]-R[0][j_noisy[0]])*0.5+R[0][j_noisy[0]]
-  
+      print(R_noisy,T_noisy)
       T_clean.append(T_noisy)
       R_clean.append(R_noisy)
 
-    elif std_cut==1:
-      for i in range(0,T.shape[1]):
-        T_clean.append(np.sum(np.reshape(T_sub[:,i:i+1],T_sub.shape[0]))/T_sub.shape[0])
-        R_clean.append(R[0][i])
-      
 
     T_tot=np.array(T_clean)
     R_tot=np.array(R_clean)
 
-    plt.plot(R_noisy,T_noisy,'+')
-    plt.plot(R_clean,T_clean,'.')
-    plt.show()
+    #plt.plot(R_noisy,T_noisy,'+')
+    #plt.plot(R_clean,T_clean,'.')
+    #plt.show()
 
     return R_clean,T_clean
 
@@ -152,13 +165,13 @@ def zone_matrix(zoneID,**kwargs):
 
   return None
 
-#zone_matrix(zones[3],33.954434912651394,18.35909447011263,0.007,1.502,smooth=True)
-print(zone_matrix(3))
 
-sys.exit()
+#zone_matrix(3)
+
+#sys.exit()
 R_def=[]
 T_def=[]
-for i in range(1,5):
+for i in range(1,4):
   R=zone_matrix(i)[0]
   T=zone_matrix(i)[1]
   for j in range(0,len(R)):
