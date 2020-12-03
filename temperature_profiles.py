@@ -84,15 +84,9 @@ def zone_matrix(zoneID,**kwargs):
   R=rr
   P=pp
 
-
-  # Find temperature submatrix of azimuthal directions
-  T_sub=T[islit_1:islit_2+1,:]
-  T_sub=T
-
-  """
   plt.imshow(T)
   plt.show()
-
+  """
   plt.imshow(T_sub)
   plt.show()
   """
@@ -103,6 +97,7 @@ def zone_matrix(zoneID,**kwargs):
     col=np.reshape(T[:,i:i+1],T.shape[0])
     std_array.append(np.std(col))
 
+  #sys.exit()
 
   # Find the median and the MAD of std_array
   median=np.median(std_array)
@@ -111,6 +106,9 @@ def zone_matrix(zoneID,**kwargs):
     
   if zoneID!=4:
 
+    # Find temperature submatrix of azimuthal directions
+    T_sub=T[islit_1:islit_2+1,:]
+    #T_sub=T
 
     # Initialize relevant variables
     T_noisy=0
@@ -139,7 +137,6 @@ def zone_matrix(zoneID,**kwargs):
     if len(j_noisy)!=0:
       T_noisy=T_noisy/len(j_noisy)
       R_noisy=(R[0][j_noisy[-1]]-R[0][j_noisy[0]])*0.5+R[0][j_noisy[0]]
-      print(R_noisy,T_noisy)
       T_clean.append(T_noisy)
       R_clean.append(R_noisy)
 
@@ -147,11 +144,7 @@ def zone_matrix(zoneID,**kwargs):
     T_tot=np.array(T_clean)
     R_tot=np.array(R_clean)
 
-    #plt.plot(R_noisy,T_noisy,'+')
-    #plt.plot(R_clean,T_clean,'.')
-    #plt.show()
-
-    return R_clean,T_clean
+    return R_tot,T_tot
 
   else:
     T_cpd=[]
@@ -159,16 +152,20 @@ def zone_matrix(zoneID,**kwargs):
     R_cpd_sym=[]
     for i in range(0,T.shape[1]):
       T_cpd.append(np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0])
-      R_cpd.append(R[0][i]+D)
+      R_cpd.append(R[0][i])
+
+    plt.plot(R_cpd,T_cpd,'.')
+    plt.show()
+
+    
       
     return R_cpd,T_cpd
 
   return None
 
 
-#zone_matrix(3)
-
-#sys.exit()
+zone_matrix(2)
+sys.exit()
 R_def=[]
 T_def=[]
 for i in range(1,4):
