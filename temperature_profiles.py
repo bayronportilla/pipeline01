@@ -20,9 +20,9 @@ def zone_matrix(zoneID,**kwargs):
   path_input_file='../input.dat'
   infile=open(path_input_file).readlines()
   for line in infile:
-    if line.split('=')[0]=='star02:x':
+    if line.split('=')[0]=='zone4:x':
       xp=float(line.split('=')[1])
-    elif line.split('=')[0]=='star02:y':
+    elif line.split('=')[0]=='zone4:y':
       yp=float(line.split('=')[1])
     elif line.split('=')[0]=='zone4:Rin':
       Rin=float(line.split('=')[1])
@@ -97,7 +97,9 @@ def zone_matrix(zoneID,**kwargs):
     col=np.reshape(T[:,i:i+1],T.shape[0])
     std_array.append(np.std(col))
 
-  #sys.exit()
+  plt.plot(std_array,".")
+  plt.show()
+  sys.exit()
 
   # Find the median and the MAD of std_array
   median=np.median(std_array)
@@ -157,14 +159,12 @@ def zone_matrix(zoneID,**kwargs):
     plt.plot(R_cpd,T_cpd,'.')
     plt.show()
 
-    
-      
     return R_cpd,T_cpd
 
   return None
 
 
-zone_matrix(2)
+zone_matrix(4)
 sys.exit()
 R_def=[]
 T_def=[]
