@@ -99,7 +99,7 @@ def zone_matrix(zoneID,**kwargs):
 
   plt.plot(std_array,".")
   plt.show()
-  sys.exit()
+  #sys.exit()
 
   # Find the median and the MAD of std_array
   median=np.median(std_array)
@@ -158,6 +158,11 @@ def zone_matrix(zoneID,**kwargs):
 
     plt.plot(R_cpd,T_cpd,'.')
     plt.show()
+
+    f=open("temp_cpd.dat","w")
+    for i in range(0,len(R_cpd)):
+      f.write("%.15e %.15e\n"%(R_cpd[i],T_cpd[i]))
+    f.close()
 
     return R_cpd,T_cpd
 
