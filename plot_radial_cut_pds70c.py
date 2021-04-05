@@ -29,14 +29,14 @@ ax.errorbar(obs[:,0:1],obs[:,1:2],obs[:,2:3],fmt='.',label='Observation',color="
 ax.plot(mod05[:,0:1]-shift,mod05[:,1:2],label=r'$M_\mathrm{p}=0.5 \, M_{\mathrm{Jup}}$',linewidth=lwidth,color="darkgrey")
 ax.plot(mod5[:,0:1]-shift,mod5[:,1:2],label=r'$M_\mathrm{p}=5 \, M_{\mathrm{Jup}}$',linewidth=lwidth,color="lightcoral")
 ax.plot(mod12[:,0:1]-shift,mod12[:,1:2],label=r'$M_\mathrm{p}=12 \, M_{\mathrm{Jup}}$',linewidth=lwidth,color="peru")
-ax.set_xlabel('Heliocentric distance (AU)')
+ax.set_xlabel('Radial distance (AU)')
 ax.set_ylabel('Flux density (mJy/beam)')
 ax.legend(loc="upper left",frameon=False)
 ax.set_xlim(0,120)
 ax.set_ylim(0,)
 plt.tight_layout()
 name="cpd_effect_three_cases"
-#fig.savefig("../%s.png"%(name))
+fig.savefig("../%s.png"%(name))
 fig.savefig("/Users/users/bportilla/Documents/first_project/scripts/PDS70/paper_figures/%s.png"%(name))
 plt.show()
 
