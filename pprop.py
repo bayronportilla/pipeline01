@@ -9,9 +9,9 @@ import fnmatch
 
 ############################################################
 # Inputs
-Nzones=3
-fvSI=0.72
-fvC=0.28
+Nzones=1
+fvSI=0.80
+fvC=0.20
 
 
 ############################################################
@@ -45,11 +45,9 @@ for i in range(0,Nzones):
 
 ############################################################
 # Creating lists for both cases
-fvC=str(fvC)
-fvSI=str(fvSI)
 case2=[]
 for filename in os.listdir(folder):
-    if fnmatch.fnmatch(filename,('*_f%s_f%s.fits.gz'%(fvSI,fvC))):
+    if fnmatch.fnmatch(filename,('*_f%.2f_f%.2f.fits.gz'%(fvSI,fvC))):
         case2.append(filename)
 
 

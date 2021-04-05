@@ -8,103 +8,152 @@ from matplotlib import ticker, patches
 import astropy.units as u
 import sys
 from astropy.stats import median_absolute_deviation
+"""
+f1, ax1 = plt.subplots()
+ax1.plot(range(0,10))
+f1.show()
+input("Close the figure and press a key to continue")
+f2, ax2 = plt.subplots()
+ax2.plot(range(10,20))
+f2.show()
+input("Close the figure and press a key to continue")
+#sys.exit()
+#x=np.random.normal(0,2,1000)
+x=np.random.uniform(size=3)
+x=np.append(x,[2.5])
+print()
 
+x = y = z = np.arange(0.0,5.0,1.0)
+print(x,y,z)
+np.savetxt('test.out',(x,y),newline="\n")   # X is an array
+"""
 
-zones=mread.read_zones("../output/")
+#sys.exit()
+def plot_statistics(matrix,array,f,visual=None,**kwargs):
+  if kwargs["estimator"]=="mean":
+    mean=np.mean(array)
+    stdv=np.std(array)
+    if visual is True:
+      fig,((ax1,ax2))=plt.subplots(1,2,figsize=(15,5))
+      ax1.imshow(matrix)
+      ax1.set_xlabel("radial")
+      ax1.set_ylabel("azimuthal")
+      ax2.plot(array,".")
+      ax2.axhline(mean)
+      ax2.axhspan(mean-f*stdv,mean+f*stdv,alpha=0.2)
+      ax2.text(0,mean,"Mean=%.1f"%mean)
+      ax2.text(0,mean-f*stdv,"$-%d\sigma$"%f)
+      ax2.text(0,mean+f*stdv,"$+%d\sigma$"%f)
+      ax2.set_xlabel("radial")
+      ax2.set_ylabel("standard deviation")
+      return fig
+    else:
+      return mean,stdv
+  elif kwargs["estimator"]=="median":
+    median=np.median(array)
+    mad=median_absolute_deviation(array)
+    if visual is True:
+      fig,((ax1,ax2))=plt.subplots(1,2,figsize=(15,5))
+      ax1.imshow(matrix)
+      ax1.set_xlabel("radial")
+      ax1.set_ylabel("azimuthal")
+      ax2.plot(array,".")
+      ax2.axhline(median)
+      ax2.axhspan(median-f*mad,median+f*mad,alpha=0.2)
+      ax2.text(0,median,"Median=%.1f"%median)
+      ax2.text(0,median-f*mad,"$-%d\mathrm{MAD}$"%f)
+      ax2.text(0,median+f*mad,"$+%d\mathrm{MAD}$"%f)
+      ax2.set_xlabel("radial")
+      ax2.set_ylabel("standard deviation")
+      return fig
+    else:
+      return median,mad
 
-def zone_matrix(zoneID,**kwargs):
   
-  zone=zones[zoneID-1]
+#plt.show()
+    
 
-  # Reading information from 'input' file
-  path_input_file='../input.dat'
-  infile=open(path_input_file).readlines()
-  for line in infile:
-    if line.split('=')[0]=='zone4:x':
-      xp=float(line.split('=')[1])
-    elif line.split('=')[0]=='zone4:y':
-      yp=float(line.split('=')[1])
-    elif line.split('=')[0]=='zone4:Rin':
-      Rin=float(line.split('=')[1])
-    elif line.split('=')[0]=='zone4:Rout':
-      Rout=float(line.split('=')[1])
-    elif line.split('=')[0]=='zone1:Rin':
-      Rin_1=float(line.split('=')[1])  
-    elif line.split('=')[0]=='zone2:Rin':
-      Rin_2=float(line.split('=')[1])
-    elif line.split('=')[0]=='zone3:Rin':
-      Rin_3=float(line.split('=')[1])
+#fig=plot_statistics(x,1,estimator="median")
+#plt.show()
+#plot_statistics(x,estimator="mean")
+#sys.exit()
 
+zones=mread.read_zones("../output_01/")
 
-  Rins=[Rin_1,Rin_2,Rin_3]
-  
+def zone_matrix(zones,ave=False):
+  zoneID=0
+  for zone in zones:
+    zoneID+=1
+    # Get temperature field
+    field=getattr(zone,"temp")
+    fieldlog=mplot.plog(field)
 
-  # Distance to planet from star
-  D=(xp**2+yp**2)**0.5
+    # Midplane coordinates
+    x=zone.x[:,int(zone.nt/2),:]
+    y=zone.y[:,int(zone.nt/2),:]
+    x=np.append(x,[x[0,:]],axis=0)
+    y=np.append(y,[y[0,:]],axis=0)
+    rr=zone.r[:,int(zone.nt/2),:]
+    pp=zone.phi[:,int(zone.nt/2),:]
 
+    # Midplane temperature (averaged)
+    val=(fieldlog[:,int(zone.nt/2),:]+fieldlog[:,int(zone.nt/2+1),:])/2.0
 
-  # Distance to CPD's Rout from star
-  d=(D**2+Rout**2)**0.5
-  
+    # Return triplet 
+    T,R,P=val,np.reshape(rr[0],rr.shape[0]),np.reshape(pp[:,0:1],pp.shape[0])
+    #plt.imshow(T)
+    #plt.show()
 
-  # theta,theta prime, theta_1 and theta_2
-  theta=np.arctan(yp/xp)
-  thetap=np.arcsin(Rout/d)
-  theta_1=theta-thetap
-  theta_2=theta+thetap
+    if ave is True:
+      # Compute array of standard deviation
+      std_array=[]
+      for i in range(0,T.shape[1]):
+        col=np.reshape(T[:,i:i+1],T.shape[0])
+        std_array.append(np.std(col))  
+        #std_array.append(np.median(col))
+      while True:
+        f=int(input("Enter the f-value: "))
+        fig=plot_statistics(T,std_array,f,estimator="median",visual=True)
+        #fig=plot_statistics(T,std_array,f,estimator="mean",visual=True)
+        fig.show()
+        usef=bool(int(input("Use this f? (1 means yes, 0 means No): ")))
+        if usef==True:
+          break
+      print("Ok, I will use f=",f)
+      median=plot_statistics(T,std_array,f,estimator="median",visual=False)[0]
+      mad=plot_statistics(T,std_array,f,estimator="median",visual=False)[1]
+      T_ave,r_ave=[],[]
+      file=open("temp_ave_zone%d.dat"%zoneID,"w")
+      for i in range(0,T.shape[1]):
+        if abs(std_array[i]-median)<f*mad and std_array[i]!=0:
+          T_ave.append(np.sum(np.reshape(T[:,i:i+1],T.shape[0]))/T.shape[0])
+          r_ave.append(R[i])
+      T_ave,r_ave=np.array(T_ave),np.array(r_ave)
+      #np.savetxt("temp_ave_zone%d.dat"%zoneID,(r_ave,T_ave))
+      for i,j in zip(r_ave,T_ave):
+        file.write("%.15e %.15e\n"%(i,j))
+      file.close()
+      fig2,ax2=plt.subplots()
+      ax2.plot(r_ave,10**T_ave,".")    
+      ax2.set_xlabel("r (AU)")
+      ax2.set_ylabel("T (K)")
+      ax2.set_xscale("log")
+      ax2.set_yscale("log")
+      plt.show()
+      
+      print("line")
+      #sys.exit()
+        
+    if ave is False:
+      file=open("temp_nonave_zone%d.dat"%zoneID,"w")
+      T_cut=np.reshape(T[int(T.shape[0]*0.5):int(T.shape[0]*0.5+1)],T.shape[0])
+      for i,j in zip(R,T_cut):
+        file.write("%.15e %.15e\n"%(i,j))
+      file.close()
+      
+      
 
-
-  # Find i index closest to the input phi value
-  islit=int(round(theta/(2*np.pi/zone.np)))-1
-  islit_1=int(round(theta_1/(2*np.pi/zone.np)))-1
-  islit_2=int(round(theta_2/(2*np.pi/zone.np)))-1
-  Nislit=islit_2-islit_1+1
-
-
-  # Get temperature field
-  field=getattr(zone,"temp")
-  fieldlog=mplot.plog(field)
-
-
-  # Midplane coordinates
-  x=zone.x[:,int(zone.nt/2),:]
-  y=zone.y[:,int(zone.nt/2),:]
-  x=np.append(x,[x[0,:]],axis=0)
-  y=np.append(y,[y[0,:]],axis=0)
-  rr=zone.r[:,int(zone.nt/2),:]
-  pp=zone.phi[:,int(zone.nt/2),:]
-
-
-  # Midplane temperature (averaged)
-  val=(fieldlog[:,int(zone.nt/2),:]+fieldlog[:,int(zone.nt/2+1),:])/2.0
-
-
-  # Return triplet (they all have the same dimension)
-  T=val
-  R=rr
-  P=pp
-
-  plt.imshow(T)
-  plt.show()
-  """
-  plt.imshow(T_sub)
-  plt.show()
-  """
-
-  # Compute standard deviation array  
-  std_array=[]
-  for i in range(0,T.shape[1]):
-    col=np.reshape(T[:,i:i+1],T.shape[0])
-    std_array.append(np.std(col))
-
-  plt.plot(std_array,".")
-  plt.show()
-  #sys.exit()
-
-  # Find the median and the MAD of std_array
-  median=np.median(std_array)
-  mad=median_absolute_deviation(std_array)
-  
+  sys.exit()
     
   if zoneID!=4:
 
@@ -169,7 +218,7 @@ def zone_matrix(zoneID,**kwargs):
   return None
 
 
-zone_matrix(4)
+zone_matrix(zones,ave=True)
 sys.exit()
 R_def=[]
 T_def=[]
