@@ -78,7 +78,7 @@ def plot_statistics(matrix,array,f,visual=None,**kwargs):
 #plot_statistics(x,estimator="mean")
 #sys.exit()
 
-zones=mread.read_zones("../output/")
+zones=mread.read_zones("../output_low_mass/")
 
 def zone_matrix(zones,ave=False):
   zoneID=0
