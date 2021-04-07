@@ -99,7 +99,6 @@ def zone_matrix(zones,ave=False):
     R,P=np.reshape(rr[0],rr.shape[1]),np.reshape(pp[:,0:1],pp.shape[0])
     plt.imshow(T)
     plt.show()
-    print(zoneID)
 
     if ave is True:
       # Compute array of standard deviation
@@ -136,14 +135,20 @@ def zone_matrix(zones,ave=False):
       ax2.set_xscale("log")
       ax2.set_yscale("log")
       plt.show()
-      
       print("line")
       #sys.exit()
         
     if ave is False:
+      dirslit=(float(input("Enter the direction in the 'input plane': "))*u.deg).to(u.rad)
+      #islit=int(round(np.arctan(yp/xp)/(2*np.pi/zones[0].np)))x-1
+      islit=int(dirslit.value/(2*np.pi/zone.np))
+      print(dirslit)
+      print(zone.np)
+      print(islit)
       file=open("temp_nonave_zone%d.dat"%zoneID,"w")
       #T_cut=np.reshape(T[int(T.shape[0]*0.5):int(T.shape[0]*0.5+1)],T.shape[1])
-      T_cut=np.reshape(T[int(15):int(15+1)],T.shape[1])
+      T_cut=np.reshape(T[islit:islit+1,:],T.shape[1])
+      print(T_cut)
       for i,j in zip(R,T_cut):
         file.write("%.15e %.15e\n"%(i,j))
       file.close()
