@@ -8,27 +8,8 @@ from matplotlib import ticker, patches
 import astropy.units as u
 import sys
 from astropy.stats import median_absolute_deviation
-"""
-f1, ax1 = plt.subplots()
-ax1.plot(range(0,10))
-f1.show()
-input("Close the figure and press a key to continue")
-f2, ax2 = plt.subplots()
-ax2.plot(range(10,20))
-f2.show()
-input("Close the figure and press a key to continue")
-#sys.exit()
-#x=np.random.normal(0,2,1000)
-x=np.random.uniform(size=3)
-x=np.append(x,[2.5])
-print()
 
-x = y = z = np.arange(0.0,5.0,1.0)
-print(x,y,z)
-np.savetxt('test.out',(x,y),newline="\n")   # X is an array
-"""
 
-#sys.exit()
 def plot_statistics(matrix,array,f,visual=None,**kwargs):
   if kwargs["estimator"]=="mean":
     mean=np.mean(array)
@@ -156,7 +137,7 @@ def zone_matrix(zones,ave=False):
     #return None
 
 
-zone_matrix(zones,ave=False)
+zone_matrix(zones,ave=True)
 
 
 
