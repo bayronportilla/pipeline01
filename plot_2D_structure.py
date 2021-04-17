@@ -3,9 +3,7 @@ from matplotlib import ticker, patches
 from astropy import units as u, constants as c
 from mcmax3dpy import read as mread, plot as mplot
 plt.style.use("fancy")
-
 zones=mread.read_zones("../output/")
-
 def plot_cuts_zones(zones,fieldname):
     x=np.empty((int(zones[0].nt*0.5),int(zones[0].nr)),dtype=object)
     y,z,f=x,x,x
@@ -19,16 +17,27 @@ def plot_cuts_zones(zones,fieldname):
     x,y,z=x[:,int(zones[0].nr):],y[:,int(zones[0].nr):],z[:,int(zones[0].nr):]
     f=f[:,int(zones[0].nr):]
     rho=(x**2+y**2)**0.5
+    rho0=np.ones((rho.shape[0],rho.shape[1]))*rho[-1]
+    z0=np.flip(z[:,-1])
+    z00=np.ones((rho0.shape[0],rho0.shape[1]))
+    for i in range(0,z00.shape[0]):
+        z00[i,:]=z0[i]
+
+    print(z0)
+    #print(rho0)
+    print(z00/120)
+    #sys.exit()
     levels=np.linspace(f.min(),f.max(),100)
-    CS=ax.contourf(rho,z/rho,f,levels=levels)
-    CL=ax.contour(rho,z/rho,f,levels=[-24,-21,-18,-15,-12],colors="white")
+    CS=ax.contourf(rho0,z00/120,f,levels=levels,extend='both')
+    CL=ax.contour(rho0,z00/120,f,levels=[-23,-20,-17],colors="white")
+    CB=fig.colorbar(CS,format="%d",label=r"log $\rho_\mathrm{dust}\, (\mathrm{g/cm}^3)$")
+    CB.set_ticks(np.linspace(f.min(),f.max(),5))
     ax.clabel(CL,fmt='%.1f',fontsize="smaller",inline=False,
               rightside_up=False,use_clabeltext=True,colors="black")
-    fig.colorbar(CS,format="%.1f",label=fieldname)
-    ax.set(xlabel="r (AU)",ylabel="z/r",xscale="log",
-           xlim=(rho[-1].min(),rho[-1].max()),ylim=(0.0,0.6))    
+    ax.set(xlabel="r (AU)",ylabel="z/r",xscale="linear")#,
+           #xlim=(rho[-1].min(),rho[-1].max()),ylim=(0.0,0.6))    
     plt.show()
-    return None#fig
+    return None
 plot_cuts_zones(zones,"rhod")
 
 
