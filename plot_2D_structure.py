@@ -28,16 +28,18 @@ def plot_cuts_zones(zones,fieldname):
     print(z00/120)
     #sys.exit()
     levels=np.linspace(f.min(),f.max(),100)
-    CS=ax.contourf(rho0,z00/120,f,levels=levels,extend='both')
-    CL=ax.contour(rho0,z00/120,f,levels=[-23,-20,-17],colors="white")
-    CB=fig.colorbar(CS,format="%d",label=r"log $\rho_\mathrm{dust}\, (\mathrm{g/cm}^3)$")
+    CS=ax.contourf(rho,z/rho,f,levels=levels,extend='neither')
+    #CL=ax.contour(rho,z/rho,f,levels=[-23,-20,-17],colors="white")
+    CL=ax.contour(rho,z/rho,f,levels=[1.5,2,2.5],colors="white")
+    #CB=fig.colorbar(CS,format="%d",label=r"log $\rho_\mathrm{dust}\, (\mathrm{g/cm}^3)$")
+    CB=fig.colorbar(CS,format="%d",label=r"log $T_\mathrm{dust}\, (K)$")
     CB.set_ticks(np.linspace(f.min(),f.max(),5))
     ax.clabel(CL,fmt='%.1f',fontsize="smaller",inline=False,
-              rightside_up=False,use_clabeltext=True,colors="black")
-    ax.set(xlabel="r (AU)",ylabel="z/r",xscale="linear")#,
-           #xlim=(rho[-1].min(),rho[-1].max()),ylim=(0.0,0.6))    
+              rightside_up=True,use_clabeltext=True,colors="black")
+    ax.set(xlabel="r (AU)",ylabel="z/r",xscale="log",
+           xlim=(rho[-1].min(),rho[-1].max()),ylim=(0.0,0.6))    
     plt.show()
     return None
-plot_cuts_zones(zones,"rhod")
+plot_cuts_zones(zones,"temp")
 
 
